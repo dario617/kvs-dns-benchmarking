@@ -1,0 +1,46 @@
+---
+
+- name: Do Requester requirements
+  block:
+    - name: Install base packages Debian
+      apt:
+          name: "{{item}}"
+          state: present
+      loop:
+        - bc
+        - tcpreplay
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Install base packages CentOS
+      yum:
+          name: "{{item}}"
+          state: present
+      loop:
+        - bc
+        - tcpreplay
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat
+  when: requester == true
+
+- name: Do Servers requirements
+  block:
+    - name: Include tasks for CentOS
+      import_tasks: centos.yml
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat 
+
+    - name: Include tasks for Debian/Ubuntu
+      import_tasks: debian.yml
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Check that there's a go installation.
+      stat:
+        path: /usr/local/go/
+      register: go_directory
+    
+    - debug:
+        msg: "Golang directory is present"
+      when: go_directory.stat.exists and go_directory.stat.isdir
+    
+    - name: Include Golang installation
+      import_tasks: golang.yml
+      when: go_directory.stat.exists == false and go_directory.stat.isdir == false
+  when: requester == false

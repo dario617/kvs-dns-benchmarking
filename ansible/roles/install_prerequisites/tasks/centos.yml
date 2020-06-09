@@ -1,0 +1,57 @@
+---
+
+- name: Install base packages part 1
+  yum:
+      name: "{{item}}"
+      state: present
+  loop:
+    - bc
+    - tcpreplay
+    - perl-core
+    - zlib-devel
+    - automake
+    - libtool
+    - autoconf
+    - automake
+    - make
+    - pkgconfig
+  become: yes
+
+- name: Install base packages part 2
+  yum:
+    name: "@Development tools"
+    state: present
+    become: yes
+  
+- name: Install Bind9 Additional Requirements
+  yum:
+    name: "{{item}}"
+    state: present
+  loop:
+    - libuv1
+    - libcap
+    - libtool-ltdl-dev
+  become: yes
+
+- name: Install NSD Additional Requirements
+  yum:
+    name: "{{item}}"
+    state: present
+  loop:
+    - libevent
+    - flex
+    - bison
+  become: yes
+
+- name: Install Knot Additional Requirements
+  yum:
+    name: "{{item}}"
+    state: present
+    loop:
+      - userspace-rcu-devel 
+      - gnutls-devel 
+      - libedit-devel
+      - lmdb-devel
+  become: yes
+
+- name: 

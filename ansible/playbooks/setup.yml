@@ -1,0 +1,23 @@
+---
+
+- name: Install requester prerequisites
+  hosts:
+    - requester
+  vars: 
+    - requester: true
+  roles:
+    - install_prerequisites
+
+- name: Install remote servers prerequisites
+  hosts:
+    - servers
+  vars: 
+    - requester: false
+  roles:
+    - install_prerequisites
+
+- name: Compile and install dns servers
+  hosts:
+    - servers
+  roles:
+    - install_servers

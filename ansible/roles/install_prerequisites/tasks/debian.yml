@@ -1,0 +1,47 @@
+---
+
+  - name: Install base packages
+    apt:
+        name: "{{item}}"
+        state: present
+    loop:
+      - bc
+      - tcpreplay
+      - build-essentials
+      - checkinstall
+      - zlib1g-dev
+      - pkg-config
+    become: yes
+  
+  - name: Install Bind9 Additional Requirements
+    yum:
+      name: "{{item}}"
+      state: present
+    loop:
+      - libuv1
+      - libcap
+      - libtool-ltdl-dev
+    become: yes
+
+  - name: Install NSD Additional Requirements
+    yum:
+      name: "{{item}}"
+      state: present
+    loop:
+      - libevent
+      - flex
+      - bison
+    become: yes
+
+  - name: Install Knot Additional Requirements
+    yum:
+      name: "{{item}}"
+      state: present
+      loop:
+        - liburcu-dev
+        - libgnutls28-dev
+        - libedit-dev
+        - liblmdb-dev
+    become: yes
+  
+  
