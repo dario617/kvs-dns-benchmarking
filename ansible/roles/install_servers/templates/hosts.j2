@@ -1,0 +1,15 @@
+[servers]
+{{server_A}} redis_master_port=7001 redis_slave_port=7002 name="Machine1"
+{{server_B}} redis_master_port=7003 redis_slave_port=7004 name="Machine2"
+{{server_C}} redis_master_port=7005 redis_slave_port=7006 name="Machine3"
+  
+[cassandra_master]
+{{server_A}}
+
+[cassandra_slaves]
+{{server_B}}
+{{server_C}}
+
+[all:vars]
+ansible_connection=ssh
+ansible_user="{{ansible_user}}"

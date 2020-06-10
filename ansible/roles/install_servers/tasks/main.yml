@@ -1,0 +1,94 @@
+---
+
+- name: Make dirs
+  file:
+    - path: "{{item}}"
+    - state: directory
+  loop:
+    - "/home/{{ansible_user}}/KvsDns"
+    - "/home/{{ansible_user}}/bind9"
+    - "/home/{{ansible_user}}/knot2"
+    - "/home/{{ansible_user}}/nsd4"
+
+- name: Get goKvsDns
+  git:
+    dest: "/home/{{ansible_user}}/KvsDns"
+    repo: https://github.com/dario617/goKvsDns
+    depth: 1
+    version: master
+    update: yes
+
+- name: Get bind9
+  git:
+    dest: "/home/{{ansible_user}}/bind9"
+    repo: https://gitlab.isc.org/isc-projects/bind9.git 
+    depth: 1
+    version: "{{bind9_version}}"
+
+- name: Get Knot Dns
+  git:
+    dest: "/home/{{ansible_user}}/knot2"
+    repo: https://gitlab.labs.nic.cz/knot/knot-dns.git 
+    depth: 1
+    version: "{{knot2_version}}"
+
+- name: Get NSD4
+  git:
+    dest: "/home/{{ansible_user}}/nsd4"
+    repo: https://github.com/NLnetLabs/nsd.git
+    depth: 1
+    version: "{{nsd4_version}}"
+
+- name: Build Bind9
+  command:
+    argv: "{{item}}"
+    chdir: "/home/{{ansible_user}}/bind9"
+  loop:
+    - autoreconf -if
+    - env CFLAGS="-O2 -g -DNDEBUG" ./configure --with-readline=no --enable-static --disable-shared --with-gssapi=no --with-libxml2=no --disable-linux-caps
+    - "make -j {{ansible_processor_cores}}"
+
+- stat:
+    path: "/home/{{ansible_user}}/bind9/bin/named/named"
+  register: bindbin
+
+- fail:
+    msg: "Oh no, Bind didn't compile correctly"
+  when: bindbin.stat.exists
+
+- name: Build Knot
+  command:
+    argv: "{{items}}"
+    chdir: "/home/{{ansible_user}}/knot2"
+  loop:
+    - autoreconf -if
+    - env CFLAGS="-O2 -g -DNDEBUG" ./configure --enable-fastparser --enable-static --disable-shared --disable-utilities --disable-documentation
+    - "make -j {{ansible_processor_cores}}"
+
+- stat:
+    path: "/home/{{ansible_user}}/knot2/src/knotd"
+    register: knotbin
+  
+- fail:
+    msg: "Oh no, Knot didn't compile correctly"
+    when: knotbin.stat.exists
+
+- name: Build NSD
+  command:
+    argv: "{{items}}"
+    chdir: "/home/{{ansible_user}}/nsd4"
+  loop:
+    - autoreconf -if
+    - env CFLAGS="-O2 -g -DNDEBUG" ./configure --enable-root-server --disable-flto
+    - "make -j {{ansible_processor_cores}}"
+  
+- stat:
+    path: "/home/{{ansible_user}}/nsd4/nsd"
+    register: nsd4bin
+    
+- fail:
+    msg: "Oh no, NSD didn't compile correctly"
+    when: nsd4bin.stat.exists
+
+- name: Include GoKvsDns
+  import_tasks: goKvsDns.yml

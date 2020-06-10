@@ -1,0 +1,50 @@
+---
+
+remote_user: {{ansible_user}}
+
+host_1: {{server_A}}
+host_2: {{server_B}}
+host_3: {{server_C}}
+
+# Change the token for production
+etcd_token: "db37d21181592000efad06f87a00afba59f9c99b11e119d118be2b929c3387ce"
+etcd_port: 2380
+etcd_advertise_port: 2379
+etcd_names: 
+- "Machine1"
+- "Machine2"
+- "Machine3"
+
+etcdpass: test
+
+cassandra_master_ip: "{{server_A}}"
+cassandra_slaves:
+  - "{{server_B}}"
+  - "{{server_C}}"
+cassandra_cluster_name: "DNS server"
+cassandra_seeds: "{{cassandra_master_ip}},{{cassandra_slaves | join(',')}}"
+
+redis_host_1: "{{server_A}}"
+redis_host_2: "{{server_B}}"
+redis_host_3: "{{server_C}}"
+
+# Normally 6379
+redis_port_1: 7001
+redis_port_2: 7002
+redis_port_3: 7003
+redis_port_4: 7004
+redis_port_5: 7005
+redis_port_6: 7006
+
+redis_servers:
+- "{{server_A}}:7001"
+- "{{server_A}}:7002"
+- "{{server_B}}:7003"
+- "{{server_B}}:7004"
+- "{{server_C}}:7005"
+- "{{server_C}}:7006"
+
+redis_protected_mode: "no"
+
+cluster_node_timeout: 5000
+cluster_require_full_coverage: "no"
