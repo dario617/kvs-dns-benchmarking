@@ -3,3 +3,16 @@
 golang_version: 1.14
 golang_os: linux
 golang_arch: amd64
+
+knot2_version: master
+knot2ref_version: 2.7
+
+nsd4_version: NSD_4_1_27_REL
+
+bind9_version: v9_14_1
+
+pdns_version: auth-4.1.8
+
+server_A: 192.168.0.240
+server_B: 192.168.0.241
+server_C: 192.168.0.242

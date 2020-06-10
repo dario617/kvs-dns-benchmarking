@@ -7,7 +7,7 @@
     loop:
       - bc
       - tcpreplay
-      - build-essentials
+      - build-essential
       - checkinstall
       - zlib1g-dev
       - pkg-config
@@ -19,8 +19,8 @@
       state: present
     loop:
       - libuv1
-      - libcap
-      - libtool-ltdl-dev
+      - libcap-dev
+      - libtltdl-dev
     become: yes
 
   - name: Install NSD Additional Requirements
@@ -28,7 +28,7 @@
       name: "{{item}}"
       state: present
     loop:
-      - libevent
+      - libevent-dev
       - flex
       - bison
     become: yes
@@ -37,11 +37,11 @@
     yum:
       name: "{{item}}"
       state: present
-      loop:
-        - liburcu-dev
-        - libgnutls28-dev
-        - libedit-dev
-        - liblmdb-dev
+    loop:
+      - liburcu-dev
+      - libgnutls28-dev
+      - libedit-dev
+      - liblmdb-dev
     become: yes
   
   

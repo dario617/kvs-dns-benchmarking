@@ -21,7 +21,7 @@
   yum:
     name: "@Development tools"
     state: present
-    become: yes
+  become: yes
   
 - name: Install Bind9 Additional Requirements
   yum:
@@ -53,5 +53,3 @@
       - libedit-devel
       - lmdb-devel
   become: yes
-
-- name: 

@@ -9,6 +9,7 @@
       loop:
         - bc
         - tcpreplay
+      become: yes
       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
     - name: Install base packages CentOS
@@ -18,14 +19,15 @@
       loop:
         - bc
         - tcpreplay
-      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat
+      become: yes
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat'  
   when: requester == true
 
 - name: Do Servers requirements
   block:
     - name: Include tasks for CentOS
       import_tasks: centos.yml
-      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat 
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat'
 
     - name: Include tasks for Debian/Ubuntu
       import_tasks: debian.yml
@@ -42,5 +44,6 @@
     
     - name: Include Golang installation
       import_tasks: golang.yml
-      when: go_directory.stat.exists == false and go_directory.stat.isdir == false
+      become: yes
+      when: go_directory.stat.exists == false
   when: requester == false
