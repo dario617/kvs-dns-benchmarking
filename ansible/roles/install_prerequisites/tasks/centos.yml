@@ -15,7 +15,16 @@
     - automake
     - make
     - pkgconfig
+    - python-pip
+    - python3-pip
   become: yes
+
+- name: Install pip requirements
+  pip:
+    name:  
+      - ply
+      - argparse
+    state: present 
 
 - name: Install base packages part 2
   yum:

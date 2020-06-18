@@ -11,7 +11,16 @@
       - checkinstall
       - zlib1g-dev
       - pkg-config
+      - python-pip
+      - python3-pip
     become: yes
+  
+  - name: Install pip requirements
+    pip:
+      name:  
+        - ply
+        - argparse
+      state: present 
   
   - name: Install Bind9 Additional Requirements
     yum:
