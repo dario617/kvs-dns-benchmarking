@@ -1,0 +1,28 @@
+options {
+    directory "{{working_dir}}/bind9";
+    pid-file "{{working_dir}}/bind9/named.pid";
+    key-directory "{{working_dir}}/bind9";
+    listen-on port {{listen_port}} {
+          {{ansible_default_ipv4.address}};
+    };
+    {% if ansible_default_ipv6.address is defined %}
+    listen-on-v6 port {{listen_port}} {
+          {{ansible_default_ipv6.address}};
+    };
+    {% endif %}
+    minimal-responses yes;
+    max-udp-size 4096;
+    auth-nxdomain no;
+    recursion no;
+    notify no;
+};
+
+logging {
+   channel simple_log {
+      file "{{working_dir}}/bind9/server.log";
+      severity info;
+   };
+   category default { simple_log; };
+   category client { null; };
+   category security { null; };
+};

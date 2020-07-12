@@ -1,0 +1,9 @@
+---
+
+- name: Do requester
+  include_tasks: requester.yml
+  when: requester
+
+- name: Do Servers config
+  include_tasks: servers.yml
+  when: not requester

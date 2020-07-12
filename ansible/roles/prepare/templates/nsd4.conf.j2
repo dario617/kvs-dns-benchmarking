@@ -1,0 +1,16 @@
+server:
+  zonesdir: "{{working_dir}}/nsd4"
+  logfile: "{{working_dir}}/nsd4/server.log"
+  database: "{{working_dir}}/nsd4/nsd.db"
+  pidfile: "{{working_dir}}/nsd4/nsd.pid"
+  xfrdfile: "{{working_dir}}/nsd4/xfrd.state"
+  server-count: {{ansible_processor_cores}}
+  username: {{ansible_user}}
+  reuseport: yes
+  port: {{listen_port}}
+  rrl-ratelimit: 0
+  rrl-whitelist-ratelimit: 0
+  minimal-responses: yes
+  ipv4-edns-size: 4096
+  ipv6-edns-size: 4096
+  ip-address: {{ansible_default_ipv4.address}}

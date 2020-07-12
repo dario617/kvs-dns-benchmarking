@@ -6,6 +6,9 @@
 192.168.0.241
 192.168.0.242
 
+[server_orchestrator]
+192.168.0.240
+
 [all:vars]
-ansible_user=dario
+ansible_user=andhael
 ansible_connection=ssh

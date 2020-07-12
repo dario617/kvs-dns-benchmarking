@@ -21,3 +21,9 @@
     - servers
   roles:
     - install_servers
+
+- name: Get datasets
+  hosts:
+    - requester
+  roles:
+    - get_datasets

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# Recover results from files
+
+before=$(cat before{{ansible_default_ipv4.address}}.log)
+after=$(cat after{{ansible_default_ipv4.address}}.log)
+
+query_size=$(bc <<< "${after[0]} - ${before[0]}")
+query_pkts=$(bc <<< "${after[1]} - ${before[1]}")
+query_drop=$(bc <<< "${after[2]} - ${before[2]}")
+
+reply_size=$(bc <<< "${after[3]} - ${before[3]}")
+reply_pkts=$(bc <<< "${after[4]} - ${before[4]}")
+reply_drop=$(bc <<< "${after[5]} - ${before[5]}")
+
+# Compute results
+answered=$(bc <<< "scale=2; ${reply_pkts}*100.0/${query_pkts}")
+query_rate=$(bc <<< "scale=0; ${query_pkts}/${duration}")
+reply_rate=$(bc <<< "scale=0; ${reply_pkts}/${duration}")
+query_avglen=$(bc <<< "scale=0; ${query_size}/${query_pkts} - $PKT_OVERHEAD")
+reply_avglen=$(bc <<< "scale=0; ${reply_size}/${reply_pkts} - $PKT_OVERHEAD")
+
+# Save results to file using suffix $1
+echo ${answered} ${query_rate} ${query_avglen} ${reply_rate} ${reply_avglen} > "{{working_dir}}/results/results-$1-$(date '+%Y%m%d-%H-%M').log"

@@ -4,15 +4,35 @@ golang_version: 1.14
 golang_os: linux
 golang_arch: amd64
 
-knot2_version: master
-knot2ref_version: 2.7
-
+knot2_version: 2.7
 nsd4_version: NSD_4_1_27_REL
-
 bind9_version: v9_14_1
-
 pdns_version: auth-4.1.8
 
 server_A: 192.168.0.240
 server_B: 192.168.0.241
 server_C: 192.168.0.242
+
+working_dir: dns-bench
+
+listen_port: 8053
+
+# Test related configs
+total_random_zone_count: 1000000
+queries: 100000
+
+# Packets per second configs
+pps_floor: 100000
+pps_step: 10000
+pps_ceil: 1000000
+
+remote_playbook_password: dummyPasswordChangeBeforeRunning
+
+# Test configs
+tests:
+- { server: knot2, test: vanilla }
+- { server: bind9, test: vanilla }
+- { server: nsd4, test: vanilla }
+- { server: redis, test: vanilla }
+- { server: etcd, test: vanilla }
+- { server: cassandra, test: vanilla }

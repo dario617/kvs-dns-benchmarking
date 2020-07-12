@@ -1,5 +1,10 @@
 ---
 
+- name: Make Working Directory
+  file:
+    path: "/home/{{ansible_user}}/{{working_dir}}/"
+    state: directory
+
 - name: Do Requester requirements
   block:
     - name: Install base packages Debian
@@ -9,8 +14,6 @@
       loop:
         - bc
         - tcpreplay
-        - autoconf
-        - libssl-dev
         - markdown
       become: yes
       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
@@ -22,9 +25,6 @@
       loop:
         - bc
         - tcpreplay
-        - autoconf
-        - libssl-dev
-        - markdown
       become: yes
       when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat'  
   when: requester == true

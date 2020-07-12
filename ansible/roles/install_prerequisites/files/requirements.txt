@@ -1,0 +1,4 @@
+coloredlogs==14.0
+scapy==2.4.3
+gdown>=3.11.1
+pexpect

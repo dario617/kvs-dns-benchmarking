@@ -1,0 +1,62 @@
+---
+
+# Each server must start and then be populated
+# either by zone files or direct API interaction
+
+- name: Recover from master the server configurations
+  copy: 
+    src: "buffet/{{item}}"
+    dest: "/home/{{ansible_user}}/{{working_dir}}/{{item}}"
+  loop:
+    - bind9.conf
+    - knot2.conf
+    - nsd4.conf
+
+- name: Extract zones to data folder
+  unarchive:
+    creates: "/home/{{ansible_user}}/{{working_dir}}/data/{{item.folder}}"
+    dest: "/home/{{ansible_user}}/{{working_dir}}/data/{{item.folder}}"
+    src: "buffet/{{item.src}}"
+    remote_src: no
+  loop:
+    - { src: 'kvsZones.tgz', folder: "kvsZones" }
+    - { src: 'zones.tgz', folder: "zones" }
+  
+- name: Copy Script templates
+  template:
+    dest: "/home/{{ansible_user}}/{{working_dir}}/{{item.dest}}"
+    src: "templates/{{item.src}}"
+  loop:
+    - { src: 'gather_stats.sh.j2', dest: "gather_stats.sh" }
+    - { src: 'compute_rate.sh.j2', dest: "compute_rate.sh" }
+
+- name: Start Bind9 server
+  command:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/"
+    argv:
+      - "bind9/bin/named/named -c bind9.conf -f -n {{ansible_processor_cores}} &> server.log &"
+      - $! > server.pid
+  when: server == "bind9"
+  
+- name: Start Knot2
+  command:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/"
+    argv:
+      - knot2/src/knotd -c knot2.conf &> server.log &
+      - $! > server.pid #Capture pid
+  when: server == "knot2"
+
+- name: Start Nsd4
+  command:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/"
+    argv:
+      - nsd4/nsd -c nsd4.conf -d &> server.log &
+  when: server == "nsd4"
+
+- name: Start KvsDns and populate
+  include_tasks: populate.yml
+  when: orchestrate is defined
+
+- name: Start KvsDns client
+  include_tasks: kvsDns.yml
+  when: (server != "bind9" and server != "knot2" and server != "nsd4")

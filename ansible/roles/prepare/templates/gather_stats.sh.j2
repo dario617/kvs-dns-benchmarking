@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+function stats() {
+  # Query: bytes, pkts, dropped, Reply: bytes, pkts, dropped
+	if [ `uname` = "Linux" ]; then
+		echo $(cat /proc/net/dev | grep ${iface} | awk '{print $2, $3, $5, $10, $11, $13}')
+		# echo $(sudo netstat -i -b -n -d -I ${iface} | tail -n 1 | tr - 0 | awk '{print $8, $5, $7, $11, $9, $13-$7 }')
+	else
+		# FreeBSD still returns the bad value of the received bytes (4 more than in reality)
+		# Because of that we substract 4 times number of packets from received (input) bytes
+		echo $(sudo netstat -i -b -n -d -I ${iface} | grep ${iface} | head -n 1 | awk '{print $8-4*$5, $5, $7, $11, $9, $13-$7 }')
+	fi
+}
+
+iface="{{ allNetworkInterfaces | selectattr('ipv4.address', 'equalto', ansible_default_ipv4.address) | first }}"
+
+s0=( $(stats) )
+# Save stats using given name
+echo s0 > $1

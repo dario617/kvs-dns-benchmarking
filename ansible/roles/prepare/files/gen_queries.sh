@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+# Check arguments
+if [ $# -lt 3 ]; then
+	echo "Usage: $0 <zonefiles directory> <count per file> <output file>"
+	exit 1
+fi
+
+if [ -f $3 ]; then
+  echo "Reseting file $3"
+  echo "" > $3
+else
+  echo "Created file $3"
+  touch $3
+fi
+
+for f in $(ls $1); do
+  grep -m $2 -E " (A|SOA|MX|PTR|TXT|AAAA|NS)" $1/$f | awk '{print $1,$3}' >> $3
+done
+
+echo "Shuffle"
+tmpf=$(mktemp)
+shuf $3 > ${tmpf}
+mv ${tmpf} $3
+
+echo "Recover only $2 records from compilation"
+tmpf=$(mktemp)
+head -n $2 $3 > ${tmpf}
+mv ${tmpf} $3
+
+echo "Done"

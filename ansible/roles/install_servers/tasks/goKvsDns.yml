@@ -2,15 +2,15 @@
 
 - name: GoKvsDns - Copy hosts to server client
   template:
-    dest: "/home/{{ansible_user}}/KvsDns/scripts/ansible/inventory/hosts" 
+    dest: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/scripts/ansible/inventory/hosts" 
     src: hosts.j2
 
 - name: GoKvsDns - Copy vars to server client
   template:
-    dest: "/home/{{ansible_user}}/KvsDns/scripts/ansible/playbooks/group_vars/all" 
+    dest: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/scripts/ansible/playbooks/group_vars/all" 
     src: all.j2
 
 - name: Compile with Go 14
   command:
     argv: make build
-    chdir: "/home/{{ansible_user}}/KvsDns/"
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/"

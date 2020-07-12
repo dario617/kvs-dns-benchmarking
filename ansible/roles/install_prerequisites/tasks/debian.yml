@@ -13,14 +13,26 @@
       - pkg-config
       - python-pip
       - python3-pip
+      - autoconf
+      - openssl-devel
     become: yes
-  
+
+  - name: Copy requirements file
+    copy:
+        dest: "/home/{{ansible_user}}/{{working_dir}}/requirements.txt"
+        src: files/requirements.txt
+
   - name: Install pip requirements
     pip:
-      name:  
-        - ply
-        - argparse
-      state: present 
+      chdir: "/home/{{ansible_user}}/{{working_dir}}/"
+      requirements: requirements.txt
+      executable: pip3
+
+  - name: Install pexpect using pip
+    pip:
+      name: pexpect
+      state: latest
+    when: ansible_system == 'Linux'
   
   - name: Install Bind9 Additional Requirements
     yum:
@@ -29,7 +41,7 @@
     loop:
       - libuv1
       - libcap-dev
-      - libtltdl-dev
+      - libltdl-dev
     become: yes
 
   - name: Install NSD Additional Requirements

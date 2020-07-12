@@ -1,0 +1,17 @@
+---
+
+- name: Prepare PCAP files and configs
+  hosts:
+    - requester
+  roles:
+    - prepare
+  vars:
+    - requester: true
+
+- name: Iterate over different tests
+  tasks:
+    - name: Prepare each server and run test
+      include_tasks: per_server.yml
+      with_items: "{{tests}}"
+      loop_control:
+        loop_var: outer_item

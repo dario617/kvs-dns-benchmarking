@@ -1,0 +1,82 @@
+---
+
+- name: Copy scripts
+  copy:
+    src: files
+    dest: "/home/{{ansible_user}}/{{working_dir}}/tools"
+    
+- name: Parse server templates
+  template:
+    dest: "/home/{{ansible_user}}/{{working_dir}}/{{item.dest}}"
+    src: "templates/{{item.src}}"
+  loop:
+    - { src: 'bind9.conf.j2', dest: "bind9.conf" }
+    - { src: 'knot2.conf.j2', dest: "knot2.conf" }
+    - { src: 'nsd4.conf.j2', dest: "nsd4.conf" }
+    
+- name: Append zones to configurations
+  command:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/"
+    argv:
+      - "python3 ./tools/echoZones.py ./data/zones {{item.server}} {{item.file}} "
+  loop:
+    - { server: 'bind', file: 'bind9.conf'}
+    - { server: 'knot', file: 'knot2.conf'}
+    - { server: 'nsd', file: 'nsd4.conf'}
+
+- name: Check if random zones are already compressed
+  stat:
+    path: "/home/{{ansible_user}}/{{working_dir}}/data/zones.tgz"
+  register: stat_zones_random_result
+
+- name: Check if zones are already compressed
+  stat:
+    path: "/home/{{ansible_user}}/{{working_dir}}/data/kvsZones.tgz"
+  register: stat_zones_result
+
+- name: Tar random zones
+  archive:
+    dest: "/home/{{ansible_user}}/{{working_dir}}/data/zones.tgz"
+    path: "/home/{{ansible_user}}/{{working_dir}}/data/zones"
+  when: not stat_zones_random_result.stat.exists
+
+- name: Tar zones
+  archive:
+    dest: "/home/{{ansible_user}}/{{working_dir}}/data/kvsZones.tgz"
+    path: "/home/{{ansible_user}}/{{working_dir}}/data/kvsZones"
+  when: not stat_zones_result.stat.exists
+
+- name: Recover configuration files
+  fetch:
+    dest: "buffet/{{item.dest}}"
+    src: "/home/{{ansible_user}}/{{working_dir}}/{{item.file}}"
+  loop:
+    - { dest: 'bind9.conf', file: "bind9.conf" }
+    - { dest: 'knot2.conf', file: "knot2.conf" }
+    - { dest: 'nsd4.conf', file: "nsd4.conf" }
+
+- name: Recover tar zone files
+  fetch:
+    dest: "buffet/{{item.dest}}"
+    src: "/home/{{ansible_user}}/{{working_dir}}/data/{{item.file}}"
+  loop:
+    - { dest: 'kvsZones.tgz', file: "kvsZones.tgz" }
+    - { dest: 'zones.tgz', file: "zones.tgz" }
+    
+- name: Create queries for pcap
+  command:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/data"
+    argv: 
+      - "./gen_queries.sh {{item.folder}} {{queries}} {{item.output}}"
+  loop:
+    - {folder: "zones", output: "randomQueries"}
+    - {folder: "kvsZones", output: "scrappedQueries"}
+
+- name: Create PCAP Files
+  command:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/"
+    argv:
+      - "python3 ./tools/gen_trace.py -t {{server_A}},{{server_B}},{{server_C}} -p {{listen_port}} {{item.file}} -s {{item.suffix}}"
+  loop:
+    - {file: randomQueries, suffix: rand}
+    - {file: scrappedQueries, suffix: real}

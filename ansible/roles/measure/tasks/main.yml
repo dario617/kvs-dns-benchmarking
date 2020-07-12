@@ -1,0 +1,38 @@
+---
+
+- name: Copy tools
+  copy:
+    src: /files/measure.sh
+    dest: "/home/{{ansible_user}}/{{working_dir}}/tools/measure.sh"
+
+# Vanilla Measurement
+
+- name: Do tcpreplay from requester with random RR
+  command:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/data"
+    argv:
+      - '../tools/measure.sh {{item}} queries-ipv4rand.pcap {{ansible_user}} "{{server_A}} {{server_B}} {{server_C}}"'
+  with_sequence:
+    - start: pps_floor
+    - stride: pps_step
+    - end: pps_ceil
+
+- name: Do tcpreplay from requester with real scrapped RR
+  command:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/data"
+    argv:
+      - '../tools/measure.sh {{item}} queries-ipv4rand.pcap {{ansible_user}} "{{server_A}} {{server_B}} {{server_C}}"'
+  with_sequence:
+    - start: pps_floor
+    - stride: pps_step
+    - end: pps_ceil
+    
+# Close Future
+- name: Do test with controlled system failures
+  debug: msg="Implement me!"
+
+- name: Do test with memory measurement
+  debug: msg="Implement me!"
+
+- name: Do test with avg time response using dig
+  debug: msg="Implement me!"

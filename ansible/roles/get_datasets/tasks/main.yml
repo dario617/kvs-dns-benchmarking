@@ -1,0 +1,40 @@
+---
+
+- name: Make Folders
+  file:
+    path: "{{item}}"
+    state: directory
+  loop:
+    - "/home/{{ansible_user}}/{{working_dir}}/data"
+    - "/home/{{ansible_user}}/{{working_dir}}/tools"
+    - "/home/{{ansible_user}}/{{working_dir}}/results"
+    # Random zones directory
+    - "/home/{{ansible_user}}/{{working_dir}}/data/zones"
+    # Scrapped zones
+    - "/home/{{ansible_user}}/{{working_dir}}/data/kvsZones"
+
+- name: Download records
+  command: '.local/bin/gdown "https://drive.google.com/uc?id=1UdTx0RKg_RbW4Ql08ojudWySLWV0WIGw" -O /home/{{ansible_user}}/{{working_dir}}/data/dns-rr.txt'
+
+- name: Copy scripts
+  copy:
+    src: files
+    dest: "/home/{{ansible_user}}/{{working_dir}}/tools"
+
+- name: Create a single zone from dns-rr.txt
+  command:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/data"
+    argv: 
+      - python3 ../tools/parse_rr_to_zone.py dns-rr.txt -o ./main.zone
+
+- name: Create zones from dns-rr.txt
+  command:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/data/kvsZones"
+    argv: 
+      - python3 ../tools/parse_rr_to_zone.py dns-rr.txt
+
+- name: Create random zones
+  command:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/data"
+    argv: 
+      - "python3 ../tools/gen_zonelist.py {{total_random_zone_count}}"

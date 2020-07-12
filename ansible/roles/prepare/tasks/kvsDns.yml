@@ -1,0 +1,15 @@
+---
+
+# Backend has been already started by orquestrator
+
+- name: Pass Custom Makefile
+  template:
+    src: templates/Makefile.j2
+    dest: "/home/{{ansible_user}}/{{working_dir}}/kvsDns/Makefile"
+
+
+- name: Start client at machine
+  command:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/kvsDns/"
+    argv:
+      - nohup make run_standalone &
