@@ -9,6 +9,7 @@
     - "/home/{{ansible_user}}/{{working_dir}}/bind9"
     - "/home/{{ansible_user}}/{{working_dir}}/knot2"
     - "/home/{{ansible_user}}/{{working_dir}}/nsd4"
+    - "/home/{{ansible_user}}/{{working_dir}}/results"
 
 - name: Get goKvsDns
   git:

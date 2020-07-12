@@ -27,6 +27,13 @@
         - tcpreplay
       become: yes
       when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat'  
+
+    - name: Install pip requirements
+      pip:
+        chdir: "/home/{{ansible_user}}/{{working_dir}}/"
+        requirements: requirements.txt
+        executable: pip3
+        
   when: requester == true
 
 - name: Do Servers requirements
