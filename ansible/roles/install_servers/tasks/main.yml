@@ -39,6 +39,10 @@
     depth: 1
     version: "{{nsd4_version}}"
 
+- stat:
+  path: "/home/{{ansible_user}}/{{working_dir}}/bind9/bin/named/named"
+  register: bindbin
+  
 - name: Build Bind9
   command: "{{item}}"
   args:
@@ -47,6 +51,7 @@
     - autoreconf -if
     - env CFLAGS="-O2 -g -DNDEBUG" ./configure --with-readline=no --enable-static --disable-shared --with-gssapi=no --with-libxml2=no --disable-linux-caps
     - "make -j {{ansible_processor_cores}}"
+  when: not bindbin.stat.exists
       
 - stat:
     path: "/home/{{ansible_user}}/{{working_dir}}/bind9/bin/named/named"
@@ -54,7 +59,11 @@
 
 - fail:
     msg: "Oh no, Bind didn't compile correctly"
-  when: bindbin.stat.exists
+  when: not bindbin.stat.exists
+
+- stat:
+  path: "/home/{{ansible_user}}/{{working_dir}}/knot2/src/knotd"
+  register: knotbin
 
 - name: Build Knot
   command: "{{item}}"
@@ -64,6 +73,7 @@
     - autoreconf -if
     - env CFLAGS="-O2 -g -DNDEBUG" ./configure --enable-fastparser --enable-static --disable-shared --disable-utilities --disable-documentation
     - "make -j {{ansible_processor_cores}}"
+  when: not knotbin.stat.exists
 
 - stat:
     path: "/home/{{ansible_user}}/{{working_dir}}/knot2/src/knotd"
@@ -71,7 +81,11 @@
   
 - fail:
     msg: "Oh no, Knot didn't compile correctly"
-    when: knotbin.stat.exists
+    when: not knotbin.stat.exists
+
+- stat:
+  path: "/home/{{ansible_user}}/{{working_dir}}/nsd4/nsd"
+  register: nsd4bin
 
 - name: Build NSD
   command: "{{item}}"
@@ -81,6 +95,7 @@
     - autoreconf -if
     - env CFLAGS="-O2 -g -DNDEBUG" ./configure --enable-root-server --disable-flto
     - "make -j {{ansible_processor_cores}}"
+  when: not nsd4bin.stat.exists
       
 - stat:
     path: "/home/{{ansible_user}}/{{working_dir}}/nsd4/nsd"
@@ -88,7 +103,7 @@
     
 - fail:
     msg: "Oh no, NSD didn't compile correctly"
-    when: nsd4bin.stat.exists
+    when: not nsd4bin.stat.exists
 
 - name: Include GoKvsDns
   import_tasks: goKvsDns.yml
