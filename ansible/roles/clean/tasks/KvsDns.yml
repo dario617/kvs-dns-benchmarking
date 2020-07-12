@@ -1,12 +1,12 @@
 ---
 
 - name: Kill go client on machine
-  command: "kill $(cat ./{{working_dir}}/kvsDns/kvsDns.pid"
+  command: "kill $(cat ./{{working_dir}}/KvsDns/kvsDns.pid"
   when: not orchestrate
 
 - name: Shutdown redis backend
   expect:
-    chdir: "/home/{{ansible_user}}/{{working_dir}}/kvsDns/scripts/ansible"
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/scripts/ansible"
     command: "ansible-playbook -K playbooks/{{server}}_down.yml"
     responses:
       (?i)password: "{{remote_playbook_password}}"

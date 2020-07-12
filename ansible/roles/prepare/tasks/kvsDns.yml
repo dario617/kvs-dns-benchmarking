@@ -5,11 +5,11 @@
 - name: Pass Custom Makefile
   template:
     src: templates/Makefile.j2
-    dest: "/home/{{ansible_user}}/{{working_dir}}/kvsDns/Makefile"
+    dest: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/Makefile"
 
 
 - name: Start client at machine
   command:
-    chdir: "/home/{{ansible_user}}/{{working_dir}}/kvsDns/"
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/"
     argv:
       - nohup make run_standalone &

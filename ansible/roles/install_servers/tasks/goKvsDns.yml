@@ -11,6 +11,6 @@
     src: all.j2
 
 - name: Compile with Go 14
-  command:
-    argv: make build
+  command: make build
+  args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/"
