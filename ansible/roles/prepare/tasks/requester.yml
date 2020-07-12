@@ -2,7 +2,7 @@
 
 - name: Copy scripts
   copy:
-    src: files
+    src: files/
     dest: "/home/{{ansible_user}}/{{working_dir}}/tools"
     
 - name: Parse server templates
@@ -15,10 +15,9 @@
     - { src: 'nsd4.conf.j2', dest: "nsd4.conf" }
     
 - name: Append zones to configurations
-  command:
+  command: "python3 ./tools/echoZones.py ./data/zones {{item.server}} {{item.file}} "
+  args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/"
-    argv:
-      - "python3 ./tools/echoZones.py ./data/zones {{item.server}} {{item.file}} "
   loop:
     - { server: 'bind', file: 'bind9.conf'}
     - { server: 'knot', file: 'knot2.conf'}
@@ -64,19 +63,17 @@
     - { dest: 'zones.tgz', file: "zones.tgz" }
     
 - name: Create queries for pcap
-  command:
+  command: "./gen_queries.sh {{item.folder}} {{queries}} {{item.output}}"
+  args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/data"
-    argv: 
-      - "./gen_queries.sh {{item.folder}} {{queries}} {{item.output}}"
   loop:
     - {folder: "zones", output: "randomQueries"}
     - {folder: "kvsZones", output: "scrappedQueries"}
 
 - name: Create PCAP Files
-  command:
+  command: "python3 ./tools/gen_trace.py -t {{server_A}},{{server_B}},{{server_C}} -p {{listen_port}} {{item.file}} -s {{item.suffix}}"
+  args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/"
-    argv:
-      - "python3 ./tools/gen_trace.py -t {{server_A}},{{server_B}},{{server_C}} -p {{listen_port}} {{item.file}} -s {{item.suffix}}"
   loop:
     - {file: randomQueries, suffix: rand}
     - {file: scrappedQueries, suffix: real}

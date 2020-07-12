@@ -9,7 +9,6 @@
 
 
 - name: Start client at machine
-  command:
+  shell: nohup make run_standalone &
+  args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/"
-    argv:
-      - nohup make run_standalone &

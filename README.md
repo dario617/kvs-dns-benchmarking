@@ -23,7 +23,7 @@ The servers must have the following ports open for the *KvsDns server* for its d
 
 ## Run and configuration
 
-Basic configuration requires a no root user, the IP addresses of each machine, and tests configs like which server to test, what test to run, and others. 
+Basic configuration requires a no root user, the IP addresses of each machine, and tests configs like which server to test, what test to run, and others. Modify the files ansible/inventory/hosts and ansible/playbooks/group_vars/all.
 
 Once the variables are written just run and follow the prompts:
 ```
