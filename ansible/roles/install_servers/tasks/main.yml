@@ -18,12 +18,21 @@
     version: master
     update: yes
 
+- stat:
+    path: "/home/{{ansible_user}}/{{working_dir}}/bind9/bin/named/named"
+  register: bindbin
+
 - name: Get bind9
   git:
     dest: "/home/{{ansible_user}}/{{working_dir}}/bind9"
     repo: https://gitlab.isc.org/isc-projects/bind9.git 
     depth: 1
     version: "{{bind9_version}}"
+  when: not bindbin.stat.exists
+
+- stat:
+    path: "/home/{{ansible_user}}/{{working_dir}}/knot2/src/knotd"
+  register: knotbin
 
 - name: Get Knot Dns
   git:
@@ -31,6 +40,11 @@
     repo: https://gitlab.labs.nic.cz/knot/knot-dns.git 
     depth: 1
     version: "{{knot2_version}}"
+  when: not knotbin.stat.exists
+
+- stat:
+    path: "/home/{{ansible_user}}/{{working_dir}}/nsd4/nsd"
+  register: nsd4bin
 
 - name: Get NSD4
   git:
@@ -38,10 +52,7 @@
     repo: https://github.com/NLnetLabs/nsd.git
     depth: 1
     version: "{{nsd4_version}}"
-
-- stat:
-  path: "/home/{{ansible_user}}/{{working_dir}}/bind9/bin/named/named"
-  register: bindbin
+  when: not nsd4bin.stat.exists
   
 - name: Build Bind9
   command: "{{item}}"
@@ -61,10 +72,6 @@
     msg: "Oh no, Bind didn't compile correctly"
   when: not bindbin.stat.exists
 
-- stat:
-  path: "/home/{{ansible_user}}/{{working_dir}}/knot2/src/knotd"
-  register: knotbin
-
 - name: Build Knot
   command: "{{item}}"
   args:
@@ -77,15 +84,11 @@
 
 - stat:
     path: "/home/{{ansible_user}}/{{working_dir}}/knot2/src/knotd"
-    register: knotbin
+  register: knotbin
   
 - fail:
     msg: "Oh no, Knot didn't compile correctly"
-    when: not knotbin.stat.exists
-
-- stat:
-  path: "/home/{{ansible_user}}/{{working_dir}}/nsd4/nsd"
-  register: nsd4bin
+  when: not knotbin.stat.exists
 
 - name: Build NSD
   command: "{{item}}"
@@ -99,11 +102,11 @@
       
 - stat:
     path: "/home/{{ansible_user}}/{{working_dir}}/nsd4/nsd"
-    register: nsd4bin
+  register: nsd4bin
     
 - fail:
     msg: "Oh no, NSD didn't compile correctly"
-    when: not nsd4bin.stat.exists
+  when: not nsd4bin.stat.exists
 
 - name: Include GoKvsDns
   import_tasks: goKvsDns.yml

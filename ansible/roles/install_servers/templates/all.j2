@@ -22,7 +22,7 @@ cassandra_slaves:
   - "{{server_B}}"
   - "{{server_C}}"
 cassandra_cluster_name: "DNS server"
-cassandra_seeds: "{{cassandra_master_ip}},{{cassandra_slaves | join(',')}}"
+cassandra_seeds: "{{'{{'}}cassandra_master_ip{{'}}'}},{{'{{'}}cassandra_slaves | join(','){{'}}'}}"
 
 redis_host_1: "{{server_A}}"
 redis_host_2: "{{server_B}}"
