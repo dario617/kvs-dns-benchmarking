@@ -40,13 +40,13 @@
     version: "{{nsd4_version}}"
 
 - name: Build Bind9
-  command:
-    argv:
-      - autoreconf -if
-      - env CFLAGS="-O2 -g -DNDEBUG" ./configure --with-readline=no --enable-static --disable-shared --with-gssapi=no --with-libxml2=no --disable-linux-caps
-      - "make -j {{ansible_processor_cores}}"
+  command: "{{item}}"
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/bind9"
+  loop:
+    - autoreconf -if
+    - env CFLAGS="-O2 -g -DNDEBUG" ./configure --with-readline=no --enable-static --disable-shared --with-gssapi=no --with-libxml2=no --disable-linux-caps
+    - "make -j {{ansible_processor_cores}}"
       
 - stat:
     path: "/home/{{ansible_user}}/{{working_dir}}/bind9/bin/named/named"
@@ -57,13 +57,13 @@
   when: bindbin.stat.exists
 
 - name: Build Knot
-  command:
-    argv:
-      - autoreconf -if
-      - env CFLAGS="-O2 -g -DNDEBUG" ./configure --enable-fastparser --enable-static --disable-shared --disable-utilities --disable-documentation
-      - "make -j {{ansible_processor_cores}}"
+  command: "{{item}}"
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/knot2"
+  loop:
+    - autoreconf -if
+    - env CFLAGS="-O2 -g -DNDEBUG" ./configure --enable-fastparser --enable-static --disable-shared --disable-utilities --disable-documentation
+    - "make -j {{ansible_processor_cores}}"
 
 - stat:
     path: "/home/{{ansible_user}}/{{working_dir}}/knot2/src/knotd"
@@ -74,13 +74,13 @@
     when: knotbin.stat.exists
 
 - name: Build NSD
-  command:
-    argv:
-      - autoreconf -if
-      - env CFLAGS="-O2 -g -DNDEBUG" ./configure --enable-root-server --disable-flto
-      - "make -j {{ansible_processor_cores}}"
+  command: "{{item}}"
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/nsd4"
+  loop:
+    - autoreconf -if
+    - env CFLAGS="-O2 -g -DNDEBUG" ./configure --enable-root-server --disable-flto
+    - "make -j {{ansible_processor_cores}}"
       
 - stat:
     path: "/home/{{ansible_user}}/{{working_dir}}/nsd4/nsd"
