@@ -14,7 +14,7 @@
       - python-pip
       - python3-pip
       - autoconf
-      - openssl-devel
+      - libssl-dev
     become: yes
 
   - name: Copy requirements file

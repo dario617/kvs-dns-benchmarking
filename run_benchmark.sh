@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-echo "
-    __ ___    _______    ____  _   _______
+echo -e "
+    \033[0;31m__ ___    _______    ____  _   _______
    / //_/ |  / / ___/   / __ \/ | / / ___/
   / ,<  | | / /\__ \   / / / /  |/ /\__ \ 
  / /| | | |/ /___/ /  / /_/ / /|  /___/ / 
@@ -13,7 +13,7 @@ echo "
  / /_/ /  __/ / / / /__/ / / / / / / / / /_/ / /  / ,<   
 /_____/\___/_/ /_/\___/_/ /_/_/ /_/ /_/\__,_/_/  /_/|_|  
 
-Remember to set ansible variables before running the tests
+\033[0mRemember to set ansible variables before running the tests
 Go to ansible/inventory and ansible/playbooks/group_vars
 and set the corresponding variables
 
@@ -33,4 +33,4 @@ if [ $doAll == "y" ]; then
 else
     echo "Continue..."
 fi
-echo "Results saved at [PUT RESULTS LOCATION HERE]"
+echo "Results saved at ansible/roles/clean/results"
