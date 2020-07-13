@@ -16,10 +16,10 @@ file_suffix = ""
 
 # Usage
 def usage():
-    print("{:s}: [-h] [-t TARGETS] [-p PORT] [-d DO-PERCENT] [-e ECS-PERCENT] [querydb]".format(sys.argv[0]))
+    print("{:s}: [-h] [-t TARGETS] [-p PORT] [-d DO-PERCENT] [-e ECS-PERCENT] [-s output suffix] [querydb]".format(sys.argv[0]))
     print("Parameters:")
     print("\t-h             Help")
-    print("\t-t TARGETS      Target DNS server ({:s}) separated by commas".format(target))
+    print("\t-t TARGETS      Target DNS server ({:s}) separated by commas".format(str(target)))
     print("\t-p PORT        Target DNS server port ({:d})".format(target_port))
     print("\t-d DO-PERCENT  Percent of packets with DO bit ({:0.1f})".format(dnssec_ratio))
     print("\t-e ECS-PERCENT Percent of packets with random ECS ({:0.1f})".format(ecs_ratio))
@@ -29,7 +29,7 @@ def usage():
 
 # Parse options
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "ht:p:d:e:y:", [])
+    opts, args = getopt.getopt(sys.argv[1:], "ht:p:d:e:y:s:", [])
 except getopt.GetoptError as err:
     usage()
     sys.exit(1)
@@ -54,8 +54,8 @@ for o, a in opts:
         sys.exit(1)
 
 # Arguments
-if len(args) == 1:
-    dbfile = args[0]
+if len(args) >= 1:
+    dbfile = args[len(args) - 1] # The last argumetn duh
 
 # Create list of packets
 PKTS = []
@@ -76,6 +76,9 @@ fd = open(dbfile)
 modulo = len(target)
 for l in fd:
     l = l.strip().split(' ')
+    if len(l) < 2:
+        print("There's a foulty line: {}".format(str(l)))
+        continue
 
     # Don't use 0 source port (sendto doesn't like it) and reserved ports
     # (Bind drops these 7, 13, 19, 37 and 464), rfc5452#section-4.5.

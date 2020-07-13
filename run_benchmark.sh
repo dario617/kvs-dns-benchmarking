@@ -19,18 +19,19 @@ and set the corresponding variables
 
 "
 cd ansible
-read -p 'Do you wish to setup the systems? (y/n)' doSetup
+read -p 'Do you wish to setup the systems? (y/n) ' doSetup
 if [ $doSetup == "y" ]; then
     echo "Starting setup"
     ansible-playbook -K playbooks/setup.yml
 else
     echo "Skipping setup"
 fi
-read -p 'Run all tests and measure? (y/n)' doAll
+read -p 'Run all tests and measure? (y/n) ' doAll
 if [ $doAll == "y" ]; then
     echo "Running all tests"
     ansible-playbook -K playbooks/run_and_measure.yml 
 else
     echo "Continue..."
 fi
-echo "Results saved at ansible/roles/clean/results"
+# Move results to another folder over here
+echo "Results saved at ansible/playbooks/results"

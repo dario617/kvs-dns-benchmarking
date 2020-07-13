@@ -28,7 +28,7 @@
 
 - name: Copy generation templates to data folder
   copy:
-    src: files/wordlist
+    src: "files/{{item}}"
     dest: "/home/{{ansible_user}}/{{working_dir}}/data/{{item}}"
   loop:
     - wordlist

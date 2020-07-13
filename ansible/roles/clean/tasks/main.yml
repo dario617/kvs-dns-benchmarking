@@ -26,4 +26,4 @@
 - name: Recover results from Working directory
   fetch:
     src: "/home/{{ansible_user}}/{{working_dir}}/results"
-    dest: "results"
+    dest: "results/{{server}}"

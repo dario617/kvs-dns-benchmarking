@@ -26,6 +26,7 @@ if __name__ == "__main__":
     else:
       print("Not a valid server. Options are bind, knot, nsd")
       exit(1)
-    
+    # Write top line
+    conf.write("\n")
     for z in zones:
-      conf.write(template.format(z, args.directory+"/"+z+".zone"))
+      conf.write(template.format(z.strip(), args.directory+"/"+z.strip()+".zone"))

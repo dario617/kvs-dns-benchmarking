@@ -31,7 +31,7 @@ with open("./zone.tpl", 'r') as tpl_file:
 
 # Create zonelist and stub.zone
 zonelist = open("zonelist", "w")
-stubzone = open("./zones/stub.zone", "w")
+#stubzone = open("./zones/stub.zone", "w")
 
 for i in range(0, count):
     name = names[i]
@@ -40,6 +40,8 @@ for i in range(0, count):
     zone=re.sub("@DOTZONE@", "." + name, tpl)
     zone=re.sub("@ZONE@", name, zone)
     stubzone.write(zone)
+    with open("./zones/{}zone".format(name),"w") as f:
+        f.write(zone)
 
-stubzone.close()
+#stubzone.close()
 zonelist.close()
