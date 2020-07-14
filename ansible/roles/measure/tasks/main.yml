@@ -1,9 +1,10 @@
 ---
 
-- name: Copy tools
-  copy:
-    src: /files/measure.sh
+- name: Template tools
+  template:
+    src: templates/measure.sh.j2
     dest: "/home/{{ansible_user}}/{{working_dir}}/tools/measure.sh"
+    mode: 0774
 
 # Vanilla Measurement
 
@@ -11,19 +12,15 @@
   command: '../tools/measure.sh {{item}} queries-ipv4rand.pcap {{ansible_user}} "{{server_A}} {{server_B}} {{server_C}}"'
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/data"
-  with_sequence:
-    - start: pps_floor
-    - stride: pps_step
-    - end: pps_ceil
+  become: yes
+  with_sequence: "start={{pps_floor}} stride={{pps_step}} end={{pps_ceil}}"
 
 - name: Do tcpreplay from requester with real scrapped RR
   command: '../tools/measure.sh {{item}} queries-ipv4rand.pcap {{ansible_user}} "{{server_A}} {{server_B}} {{server_C}}"'
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/data"
-  with_sequence:
-    - start: pps_floor
-    - stride: pps_step
-    - end: pps_ceil
+  become: yes
+  with_sequence: "start={{pps_floor}} stride={{pps_step}} end={{pps_ceil}}"
     
 # Close Future
 - name: Do test with controlled system failures

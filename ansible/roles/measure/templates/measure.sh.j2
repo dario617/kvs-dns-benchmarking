@@ -11,15 +11,15 @@ function do_replay() {
 
 	# Stats before for each target
 	for target in targets:
-		ssh "${user}@${target}" ./gather_stats.sh "before${target}.log"
+		ssh $user@$target "cd {{working_dir}}; ./gather_stats.sh before${target}.log"
 
 	# Replay the trace file
 	tcpreplay -i $1 ${rflags} $2
 	
 	# Stats after and compute
 	for target in targets:
-		ssh "${user}@${target}" ./gather_stats.sh "after${target}.log"
-		ssh "${user}@${target}" ./compute_rate.sh ${pps}
+		ssh $user@$target "cd {{working_dir}}; ./gather_stats.sh after${target}.log"
+		ssh $user@$target "cd {{working_dir}}; ./compute_rate.sh ${pps}"
 
 }
 
