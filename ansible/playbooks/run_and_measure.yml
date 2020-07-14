@@ -8,10 +8,29 @@
   vars:
     - requester: true
 
-- name: Iterate over different tests
-  tasks:
-    - name: Prepare each server and run test
-      include_tasks: per_server.yml
-      with_items: "{{tests}}"
-      loop_control:
-        loop_var: outer_item
+- name: Push config files and zones
+  hosts:
+    - servers
+  roles:
+    - prepare
+  vars:
+    - requester: false
+    - server: "{{ lookup('env','SERVER')}}"
+    - test: "{{ lookup('env','TEST')}}"
+
+- name: Measure for each server
+  hosts:
+    - requester
+  roles:
+    - measure
+  vars:
+    - server: "{{ lookup('env','SERVER')}}"
+    - test: "{{ lookup('env','TEST')}}"
+
+- name: Clean and shutdown
+  hosts:
+    - servers
+  roles:
+    - clean
+  vars:
+    - server: "{{ lookup('env','SERVER')}}"

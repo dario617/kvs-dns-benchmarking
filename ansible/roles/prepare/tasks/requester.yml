@@ -53,7 +53,7 @@
     - { src: 'nsd4.conf.j2', dest: "nsd4r.conf" }
     
 - name: Append zones to configurations
-  command: "python3 ./tools/echoZones.py ./data/zones {{item.server}} {{item.file}} ./data/parsed_zonelist"
+  command: "python3 ./tools/echoZones.py /home/{{ansible_user}}/{{working_dir}}/data/zones {{item.server}} {{item.file}} ./data/parsed_zonelist"
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/"
   loop:
@@ -89,6 +89,7 @@
   fetch:
     dest: "buffer/{{item.dest}}"
     src: "/home/{{ansible_user}}/{{working_dir}}/data/{{item.file}}"
+    flat: yes
   loop:
     - { dest: 'kvsZones.tgz', file: "kvsZones.tgz" }
     - { dest: 'zones.tgz', file: "zones.tgz" }
@@ -100,7 +101,7 @@
   become: yes
   become_method: sudo
   loop:
-    - {folder: "zones", output: "randomQueries"}
+    - {folder: "singlezone", output: "randomQueries"}
     - {folder: "kvsZones", output: "scrappedQueries"}
 
 - name: Create PCAP Files
@@ -113,5 +114,5 @@
   register: r
     
 - debug: msg="{{item.stdout}}"
-  when: "{{item.changed == true}}"
+  when: "{{item.changed}} == true"
   with_items: "{{r.results}}"

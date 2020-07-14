@@ -10,6 +10,7 @@
     - "/home/{{ansible_user}}/{{working_dir}}/results"
     # Random zones directory
     - "/home/{{ansible_user}}/{{working_dir}}/data/zones"
+    - "/home/{{ansible_user}}/{{working_dir}}/data/singlezone"
     # Scrapped zones
     - "/home/{{ansible_user}}/{{working_dir}}/data/kvsZones"
 

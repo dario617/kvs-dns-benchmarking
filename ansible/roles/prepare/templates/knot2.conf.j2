@@ -1,16 +1,16 @@
 server:
-  rundir: {{working_dir}}/knot2
+  rundir: /home/{{ansible_user}}/{{working_dir}}/knot2
   max-udp-payload: 4096
   udp-workers: {{ansible_processor_cores}}
   listen: {{ansible_default_ipv4.address}}@{{listen_port}}
 
 template:
   - id: default
-    storage: {{working_dir}}/knot2
-    timer-db: {{working_dir}}/knot2/timers
+    storage: /home/{{ansible_user}}/{{working_dir}}/knot2
+    timer-db: /home/{{ansible_user}}/{{working_dir}}/knot2/timers
 
 log:
-  - target: {{working_dir}}/knot2/server.log
+  - target: /home/{{ansible_user}}/{{working_dir}}/knot2/server.log
     server: info
     zone: warning
 

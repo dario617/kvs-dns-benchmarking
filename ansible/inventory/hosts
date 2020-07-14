@@ -2,12 +2,9 @@
 192.168.0.240
 
 [servers]
-192.168.0.240
+192.168.0.240 orchestrate=true
 192.168.0.241
 192.168.0.242
-
-[server_orchestrator]
-192.168.0.240
 
 [all:vars]
 ansible_user=andhael

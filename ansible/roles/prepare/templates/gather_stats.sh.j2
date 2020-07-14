@@ -12,7 +12,7 @@ function stats() {
 	fi
 }
 
-iface="{{ allNetworkInterfaces | selectattr('ipv4.address', 'equalto', ansible_default_ipv4.address) | first }}"
+iface="{{ ansible_facts | dict2items | selectattr('value.ipv4', 'defined') | map(attribute='value') | list | selectattr('ipv4.address', 'equalto', ansible_default_ipv4.address) | first }}"
 
 s0=( $(stats) )
 # Save stats using given name

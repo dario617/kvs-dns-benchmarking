@@ -1,16 +1,5 @@
 ---
 
-- name: Start Kvs Backend
-  hosts:
-    server_orchestrator
-  roles:
-    - prepare
-  vars:
-    - requester: false
-    - server: "{{outer_item.server}}"
-    - orchestrate: true
-  when: (outer_item.server != "bind9" and outer_item.server != "knot2" and outer_item.server != "nsd4")
-
 - name: Push config files and zones
   hosts:
     - servers
@@ -37,12 +26,3 @@
     - clean
   vars:
     - server: "{{outer_item.server}}"
-
-- name: Shutdown backend with orquestrator
-  hosts:
-    - server_orchestrator
-  roles:
-    - clean
-  vars:
-    - server: "{{outer_item.server}}"
-    - orchestrate: true

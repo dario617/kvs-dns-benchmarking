@@ -75,34 +75,39 @@ ecs_count = 0
 fd = open(dbfile)
 modulo = len(target)
 for l in fd:
-    l = l.strip().split(' ')
-    if len(l) < 2:
-        print("There's a foulty line: {}".format(str(l)))
-        continue
+    try:
+        l = l.strip().split(' ')
+        if len(l) < 2:
+            print("There's a faulty line: {}".format(str(l)))
+            continue
 
-    # Don't use 0 source port (sendto doesn't like it) and reserved ports
-    # (Bind drops these 7, 13, 19, 37 and 464), rfc5452#section-4.5.
-    rnd = random.randint(1024, 49152)
+        # Don't use 0 source port (sendto doesn't like it) and reserved ports
+        # (Bind drops these 7, 13, 19, 37 and 464), rfc5452#section-4.5.
+        rnd = random.randint(1024, 49152)
 
-    msg=DNS(id=rnd, qdcount=1, qd=DNSQR(qname=l[0], qtype=l[1]))
+        msg=DNS(id=rnd, qdcount=1, qd=DNSQR(qname=l[0], qtype=l[1]))
 
-    # Add optional DO bit.
-    if dnssec_ratio == 1 or all_count * dnssec_ratio > dnssec_count:
-        msg.arcount = 1
-        msg.ar = DNSRR(rrname='.', type=41, rclass=4096, ttl=0x8000)
-        dnssec_count += 1
-
-    # Add optional ECS.
-    if ecs_ratio == 1 or all_count * ecs_ratio > ecs_count:
-        # If EDNS for DNSSEC was not already added, add OPT RR.
-        if msg.arcount != 1:
+        # Add optional DO bit.
+        if dnssec_ratio == 1 or all_count * dnssec_ratio > dnssec_count:
             msg.arcount = 1
-            msg.ar = DNSRR(rrname='.', type=41, rclass=4096, ttl=0x0000)
-        msg.ar.rdata = random.choice(ecs_list)
-        ecs_count += 1
+            msg.ar = DNSRR(rrname='.', type=41, rclass=4096, ttl=0x8000)
+            dnssec_count += 1
 
-    add_query(msg, rnd, target[all_count%modulo])
-    all_count += 1
+        # Add optional ECS.
+        if ecs_ratio == 1 or all_count * ecs_ratio > ecs_count:
+            # If EDNS for DNSSEC was not already added, add OPT RR.
+            if msg.arcount != 1:
+                msg.arcount = 1
+                msg.ar = DNSRR(rrname='.', type=41, rclass=4096, ttl=0x0000)
+            msg.ar.rdata = random.choice(ecs_list)
+            ecs_count += 1
+
+        add_query(msg, rnd, target[all_count%modulo])
+    except Exception as er:
+        print(er)
+        print("Case was {}".format(str(l)))
+        continue
+all_count += 1
 fd.close()
 
 # Dump to pcap

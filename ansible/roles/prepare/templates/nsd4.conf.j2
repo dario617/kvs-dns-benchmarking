@@ -1,9 +1,9 @@
 server:
-  zonesdir: "{{working_dir}}/nsd4"
-  logfile: "{{working_dir}}/nsd4/server.log"
-  database: "{{working_dir}}/nsd4/nsd.db"
-  pidfile: "{{working_dir}}/nsd4/nsd.pid"
-  xfrdfile: "{{working_dir}}/nsd4/xfrd.state"
+  zonesdir: "/home/{{ansible_user}}/{{working_dir}}/nsd4"
+  logfile: "/home/{{ansible_user}}/{{working_dir}}/nsd4/server.log"
+  database: "/home/{{ansible_user}}/{{working_dir}}/nsd4/nsd.db"
+  pidfile: "/home/{{ansible_user}}/{{working_dir}}/nsd4/nsd.pid"
+  xfrdfile: "/home/{{ansible_user}}/{{working_dir}}/nsd4/xfrd.state"
   server-count: {{ansible_processor_cores}}
   username: {{ansible_user}}
   reuseport: yes

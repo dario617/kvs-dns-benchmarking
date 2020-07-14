@@ -5,18 +5,25 @@
 
 - name: Recover from master the server configurations
   copy: 
-    src: "buffet/{{item}}"
+    src: "buffer/{{item}}"
     dest: "/home/{{ansible_user}}/{{working_dir}}/{{item}}"
   loop:
     - bind9.conf
     - knot2.conf
     - nsd4.conf
 
+- name: Create zone extraction folders
+  file:
+    path: "/home/{{ansible_user}}/{{working_dir}}/data/{{item}}"
+    state: directory
+  loop:
+    - "kvsZones"
+    - "zones"
+
 - name: Extract zones to data folder
   unarchive:
-    creates: "/home/{{ansible_user}}/{{working_dir}}/data/{{item.folder}}"
-    dest: "/home/{{ansible_user}}/{{working_dir}}/data/{{item.folder}}"
-    src: "buffet/{{item.src}}"
+    dest: "/home/{{ansible_user}}/{{working_dir}}/data/{{item.folder}}/"
+    src: "buffer/{{item.src}}"
     remote_src: no
   loop:
     - { src: 'kvsZones.tgz', folder: "kvsZones" }
@@ -55,7 +62,7 @@
 
 - name: Start KvsDns and populate
   include_tasks: populate.yml
-  when: orchestrate is defined
+  when: (orchestrate is defined) and (server != "bind9" and server != "knot2" and server != "nsd4")
 
 - name: Start KvsDns client
   include_tasks: kvsDns.yml

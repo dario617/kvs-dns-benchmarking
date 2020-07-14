@@ -29,4 +29,4 @@ if __name__ == "__main__":
     # Write top line
     conf.write("\n")
     for z in zones:
-      conf.write(template.format(z.strip(), args.directory+"/"+z.strip()+".zone"))
+      conf.write(template.format(z.strip(), args.directory+"/"+z.strip()+"zone"))

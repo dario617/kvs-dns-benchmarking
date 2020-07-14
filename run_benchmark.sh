@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Author: Dario Andhael
+# Issues at dpalma@dcc.uchile.cl
 echo -e "
     \033[1;31m__ ___    _______    ____  _   _______
    / //_/ |  / / ___/   / __ \/ | / / ___/
@@ -15,23 +17,48 @@ echo -e "
 
 \033[0mRemember to set ansible variables before running the tests
 Go to ansible/inventory and ansible/playbooks/group_vars
-and set the corresponding variables
+and set the corresponding variables.
 
+Setup should run only once.
 "
 cd ansible
+# Setup password for multiple playbooks
+read -p 'Do you want to store your password in a variable? (y/n) ' doPass
+if [ $doPass == "y" ]; then
+    read -sp 'Please type your password: ' daPasswd
+    echo ""
+else
+    echo "\__ you will be prompted for each test for your password"
+fi
+# Setup
 read -p 'Do you wish to setup the systems? (y/n) ' doSetup
 if [ $doSetup == "y" ]; then
     echo "Starting setup"
-    ansible-playbook -K playbooks/setup.yml
+    if [ -z $daPasswd ]; then
+        ansible-playbook -K playbooks/setup.yml
+    else
+        ansible-playbook playbooks/setup.yml --extra-vars "ansible_become_pass=${daPasswd}"
+    fi
 else
     echo "Skipping setup"
 fi
+# Tests
 read -p 'Run all tests and measure? (y/n) ' doAll
 if [ $doAll == "y" ]; then
     echo "Running all tests"
-    ansible-playbook -K playbooks/run_and_measure.yml 
+    while IFS= read -r line; do
+        export $line
+        if [ -z $daPasswd ]; then
+            ansible-playbook -K playbooks/run_and_measure.yml
+        else
+            ansible-playbook playbooks/run_and_measure.yml --extra-vars "ansible_become_pass=${daPasswd}"
+        fi
+    done < "../tests.conf"
 else
     echo "Continue..."
 fi
+
 # Move results to another folder over here
-echo "Results saved at ansible/playbooks/results"
+mkdir -p results
+mv ansible/playbooks/results/* results
+echo "If everything went well results were saved at results"

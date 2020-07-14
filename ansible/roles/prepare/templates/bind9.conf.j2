@@ -1,7 +1,7 @@
 options {
-    directory "{{working_dir}}/bind9";
-    pid-file "{{working_dir}}/bind9/named.pid";
-    key-directory "{{working_dir}}/bind9";
+    directory "/home/{{ansible_user}}/{{working_dir}}/bind9";
+    pid-file "/home/{{ansible_user}}/{{working_dir}}/bind9/named.pid";
+    key-directory "/home/{{ansible_user}}/{{working_dir}}/bind9";
     listen-on port {{listen_port}} {
           {{ansible_default_ipv4.address}};
     };
@@ -19,7 +19,7 @@ options {
 
 logging {
    channel simple_log {
-      file "{{working_dir}}/bind9/server.log";
+      file "/home/{{ansible_user}}/{{working_dir}}/bind9/server.log";
       severity info;
    };
    category default { simple_log; };
