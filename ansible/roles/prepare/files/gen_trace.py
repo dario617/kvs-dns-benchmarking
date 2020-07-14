@@ -5,6 +5,7 @@ import random
 from scapy.all import DNS, DNSQR, DNSRR, IP, IPv6, UDP, wrpcap, Ether
 
 dbfile = 'querydb'
+host_ip = '127.0.0.1'
 target = ['127.0.0.1','127.0.0.1']
 target_port = 53
 dnssec_ratio = 0.0
@@ -18,9 +19,10 @@ src_mac = '00:00:00:00:00'
 
 # Usage
 def usage():
-    print("{:s}: [-h] [-t TARGETS] [-p PORT] [-d DO-PERCENT] [-e ECS-PERCENT] [-s output suffix] [querydb]".format(sys.argv[0]))
+    print("{:s}: [-h] [-c HOST] [-t TARGETS] [-p PORT] [-d DO-PERCENT] [-e ECS-PERCENT] [-s output suffix] [-m Macs] [-a Current Mac] [querydb]".format(sys.argv[0]))
     print("Parameters:")
     print("\t-h             Help")
+    print("\t-c CURRENT HOST    Source IP to return pkgs ({:s})".format(host_ip))
     print("\t-t TARGETS      Target DNS server ({:s}) separated by commas".format(",".join(target)))
     print("\t-p PORT        Target DNS server port ({:d})".format(target_port))
     print("\t-d DO-PERCENT  Percent of packets with DO bit ({:0.1f})".format(dnssec_ratio))
@@ -33,7 +35,7 @@ def usage():
 
 # Parse options
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "ht:p:d:e:y:s:m:a:", [])
+    opts, args = getopt.getopt(sys.argv[1:], "ht:p:d:e:y:s:m:a:c:", [])
 except getopt.GetoptError as err:
     usage()
     sys.exit(1)
@@ -41,6 +43,8 @@ for o, a in opts:
     if o == '-h':
         usage()
         sys.exit(1)
+    elif o == '-c':
+        host_ip = a
     elif o == '-t':
         target = a.split(",")
     elif o == '-p':
@@ -72,9 +76,9 @@ pcap_out = 'queries-ipv{:s}{:s}.pcap'.format("6" if ':' in target else "4", file
 # Add query
 def add_query(msg, src_port, target, dst_mac):
     if ':' in target:
-        PKTS.append(Ether(dst=dst_mac,src=src_mac)/IPv6(dst=target)/UDP(sport=src_port,dport=target_port)/msg)
+        PKTS.append(Ether(dst=dst_mac,src=src_mac)/IPv6(dst=target,src=host_ip)/UDP(sport=src_port,dport=target_port)/msg)
     else:
-        PKTS.append(Ether(dst=dst_mac,src=src_mac)/IP(dst=target)/UDP(sport=src_port,dport=target_port)/msg)
+        PKTS.append(Ether(dst=dst_mac,src=src_mac)/IP(dst=target,src=host_ip)/UDP(sport=src_port,dport=target_port)/msg)
 
 # Read querydb
 all_count = 0

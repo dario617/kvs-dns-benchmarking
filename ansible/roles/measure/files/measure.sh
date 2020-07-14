@@ -18,7 +18,8 @@ function do_replay() {
 	done
 
 	# Replay the trace file
-	tcpreplay -i $interface ${rflags} $2
+	tcpprep --auto=client --cachefile=tmp.cache --pcap=$2
+	tcpreplay -i $interface ${rflags} tmp.cache
 	
 	# Stats after and compute
 	for host in $targets; do

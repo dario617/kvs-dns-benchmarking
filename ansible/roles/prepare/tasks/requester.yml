@@ -105,10 +105,11 @@
     - {folder: "kvsZones", output: "scrappedQueries"}
 
 - name: Create PCAP Files
-  command: "python3 ./tools/gen_trace.py -t {{ips}} -p {{listen_port}} -s {{item.suffix}} -m {{macs}} -a {{mymac}} ./data/{{item.file}}"
+  command: "python3 ./tools/gen_trace.py -c {{myip}} -t {{ips}} -p {{listen_port}} -s {{item.suffix}} -m {{macs}} -a {{mymac}} ./data/{{item.file}}"
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/"
   vars:
+    myip: "{{ ansible_default_ipv4['address'] }}"
     mymac: "{{ ansible_default_ipv4['macaddress'] }}"
     ips: "{{server_A}},{{server_B}},{{server_C}}"
   loop:
