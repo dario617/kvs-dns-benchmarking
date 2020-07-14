@@ -2,7 +2,7 @@
 
 - name: Copy tools
   copy:
-    src: templates/measure.sh.j2
+    src: files/measure.sh
     dest: "/home/{{ansible_user}}/{{working_dir}}/tools/measure.sh"
     mode: preserve
 
