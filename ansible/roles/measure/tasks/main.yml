@@ -9,14 +9,14 @@
 # Vanilla Measurement
 
 - name: Do tcpreplay from requester with random RR
-  command: '../tools/measure.sh {{item}} queries-ipv4rand.pcap {{ansible_user}} "{{server_A}} {{server_B}} {{server_C}}" {{working_dir}}'
+  command: '../tools/measure.sh {{item}} ../queries-ipv4rand.pcap {{ansible_user}} "{{server_A}} {{server_B}} {{server_C}}" {{working_dir}} {{ansible_default_ipv4["interface"]}}'
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/data"
   become: yes
   with_sequence: "start={{pps_floor}} stride={{pps_step}} end={{pps_ceil}}"
 
 - name: Do tcpreplay from requester with real scrapped RR
-  command: '../tools/measure.sh {{item}} queries-ipv4rand.pcap {{ansible_user}} "{{server_A}} {{server_B}} {{server_C}}" {{working_dir}}'
+  command: '../tools/measure.sh {{item}} ../queries-ipv4real.pcap {{ansible_user}} "{{server_A}} {{server_B}} {{server_C}}" {{working_dir}} {{ansible_default_ipv4["interface"]}}'
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/data"
   become: yes

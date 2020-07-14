@@ -33,9 +33,7 @@
   template:
     dest: "/home/{{ansible_user}}/{{working_dir}}/{{item.dest}}"
     src: "templates/{{item.src}}"
-    mode: 0774  
-  vars:
-    - interface: "{{ ansible_facts | dict2items | selectattr('value.ipv4', 'defined') | selectattr('value.ipv4.address', 'equalto', ansible_default_ipv4.address) | first}}"
+    mode: 0774
   loop:
     - { src: 'gather_stats.sh.j2', dest: "gather_stats.sh" }
     - { src: 'compute_rate.sh.j2', dest: "compute_rate.sh" }
@@ -46,7 +44,7 @@
     chdir: "/home/{{ansible_user}}/{{working_dir}}/"
   loop:
     - "bind9/bin/named/named -c bind9.conf -f -n {{ansible_processor_cores}} &> server.log &"
-    - $! > server.pid
+    - $? > server.pid
   when: server == "bind9"
   
 - name: Start Knot2
@@ -54,7 +52,7 @@
     chdir: "/home/{{ansible_user}}/{{working_dir}}/"
     argv:
       - knot2/src/knotd -c knot2.conf &> server.log &
-      - $! > server.pid #Capture pid
+      - $? > server.pid #Capture pid
   when: server == "knot2"
 
 - name: Start Nsd4

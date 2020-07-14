@@ -18,7 +18,7 @@ function do_replay() {
 	done
 
 	# Replay the trace file
-	tcpreplay -i $1 ${rflags} $2
+	tcpreplay -i $interface ${rflags} $2
 	
 	# Stats after and compute
 	for host in $targets; do
@@ -33,7 +33,6 @@ pcap_file=$2
 user=$3
 targets=$4 # Like "192.168.0.1 192.168.0.2 192.168.0.3"
 wd=$5
+interface=$6
 
 do_replay $pps $pcap_file
-
-../tools/measure.sh 170000 queries-ipv4rand.pcap dario "172.30.65.15 172.30.65.16 172.30.65.18" kvs-dns-bench

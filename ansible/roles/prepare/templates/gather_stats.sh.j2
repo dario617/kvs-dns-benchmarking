@@ -12,8 +12,8 @@ function stats() {
 	fi
 }
 
-iface={{interface['value']['device']}}
+iface={{ansible_default_ipv4['interface']}}
 
 s0=( $(stats) )
 # Save stats using given name
-echo s0 > $1
+echo $s0 > $1
