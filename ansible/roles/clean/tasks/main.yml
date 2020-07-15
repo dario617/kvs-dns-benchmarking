@@ -3,8 +3,8 @@
 - name: Shutdown bind9 server
   command:
     argv: 
-      - kill $(cat server.pid)
-      - wait $(cat server.pid)
+      - "kill $(cat {{working_dir}}/bind9/named.pid)"
+      - "wait $(cat {{working_dir}}/bind9/named.pid)"
   when: server == "bind9"
 
 - name: Shutdown knot2 server
@@ -22,8 +22,3 @@
 - name: Shutdown KvsDns
   include_tasks: KvsDns.yml
   when: (server != "bind9" and server != "knot2" and server != "nsd4")
-
-- name: Recover results from Working directory
-  fetch:
-    src: "/home/{{ansible_user}}/{{working_dir}}/results"
-    dest: "results/{{server}}"

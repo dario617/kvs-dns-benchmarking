@@ -3,14 +3,26 @@
 # Each server must start and then be populated
 # either by zone files or direct API interaction
 
-- name: Recover from master the server configurations
-  copy: 
+- name: Make Folders
+  file:
+    path: "{{item}}"
+    state: directory
+  loop:
+    - "/home/{{ansible_user}}/{{working_dir}}/data"
+    - "/home/{{ansible_user}}/{{working_dir}}/tools"
+    - "/home/{{ansible_user}}/{{working_dir}}/results"
+
+- name: Parse templates from master to servers
+  template: 
     src: "buffer/{{item}}"
     dest: "/home/{{ansible_user}}/{{working_dir}}/{{item}}"
   loop:
-    - bind9.conf
-    - knot2.conf
-    - nsd4.conf
+    - { src: 'bind9.conf.j2', dest: "bind9.conf" }
+    - { src: 'knot2.conf.j2', dest: "knot2.conf" }
+    - { src: 'nsd4.conf.j2', dest: "nsd4.conf" }
+    - { src: 'bind9r.conf.j2', dest: "bind9r.conf" }
+    - { src: 'knot2r.conf.j2', dest: "knot2r.conf" }
+    - { src: 'nsd4r.conf.j2', dest: "nsd4r.conf" }
 
 - name: Create zone extraction folders
   file:
@@ -31,7 +43,7 @@
   
 - name: Copy Script templates
   template:
-    dest: "/home/{{ansible_user}}/{{working_dir}}/{{item.dest}}"
+    dest: "/home/{{ansible_user}}/{{working_dir}}/tools/{{item.dest}}"
     src: "templates/{{item.src}}"
     mode: 0774
   loop:

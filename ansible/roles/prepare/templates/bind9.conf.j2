@@ -5,11 +5,11 @@ options {
     listen-on port {{listen_port}} {
           {{ansible_default_ipv4.address}};
     };
-    {% if ansible_default_ipv6.address is defined %}
+{% if ansible_default_ipv6.address is defined %}
     listen-on-v6 port {{listen_port}} {
           {{ansible_default_ipv6.address}};
     };
-    {% endif %}
+{% endif %}
     minimal-responses yes;
     max-udp-size 4096;
     auth-nxdomain no;

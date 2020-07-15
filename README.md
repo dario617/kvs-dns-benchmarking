@@ -14,7 +14,8 @@ The benchmark is written for a setup of 3 server machines and one or more reques
 
 It is recommended but not required to have password-less access between the servers using an SSH-key.
 
-Each machine must have the same user and sudo password (or passwordless sudo)
+Each machine must have the same user and sudo password with password-less sudo.
+This was done in order to avoid setting the root user setting ssh keys with other servers.
 
 The servers must have the following ports open for the *KvsDns server* for its different backends:
   * Redis: 7001,7002,7003,7004,7005,7006 and 17001,17002,17003,17004,17005,17006 since Redis uses "server port + 10" for intercluster gossip.

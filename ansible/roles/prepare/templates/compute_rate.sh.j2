@@ -4,8 +4,8 @@ duration="10"
 PKT_OVERHEAD=42
 # Recover results from files
 
-before=$(cat before{{ansible_default_ipv4.address}}.log)
-after=$(cat after{{ansible_default_ipv4.address}}.log)
+before=($(cat before{{ansible_default_ipv4.address}}.log))
+after=($(cat after{{ansible_default_ipv4.address}}.log))
 
 query_size=$(bc <<< "${after[0]} - ${before[0]}")
 query_pkts=$(bc <<< "${after[1]} - ${before[1]}")
@@ -23,6 +23,6 @@ query_avglen=$(bc <<< "scale=0; ${query_size}/${query_pkts} - $PKT_OVERHEAD")
 reply_avglen=$(bc <<< "scale=0; ${reply_size}/${reply_pkts} - $PKT_OVERHEAD")
 
 # Save results to file using suffix $1
-FILE="{{working_dir}}/results/results-$1-$(date '+%Y%m%d-%H-%M').log"
+FILE="results/results-$1-$(date '+%Y%m%d-%H-%M').log"
 touch $FILE
 echo ${answered} ${query_rate} ${query_avglen} ${reply_rate} ${reply_avglen} > $FILE

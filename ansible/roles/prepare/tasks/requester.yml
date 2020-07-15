@@ -13,23 +13,23 @@
     mode: 0774
 
 # Do for random queries
-- name: Parse server templates
-  template:
+- name: Copy server templates
+  copy:
     dest: "/home/{{ansible_user}}/{{working_dir}}/{{item.dest}}"
     src: "templates/{{item.src}}"
   loop:
-    - { src: 'bind9.conf.j2', dest: "bind9.conf" }
-    - { src: 'knot2.conf.j2', dest: "knot2.conf" }
-    - { src: 'nsd4.conf.j2', dest: "nsd4.conf" }
+    - "bind9.conf.j2"
+    - "knot2.conf.j2"
+    - "nsd4.conf.j2"
     
 - name: Append zones to configurations
-  command: "python3 ./tools/echoZones.py ./data/zones {{item.server}} {{item.file}} ./data/zonelist"
+  command: "python3 ./tools/echoZones.py /home/{{ansible_user}}/{{working_dir}}/data/zones {{item.file}} ./data/zonelist"
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/"
   loop:
-    - { server: 'bind', file: 'bind9.conf'}
-    - { server: 'knot', file: 'knot2.conf'}
-    - { server: 'nsd', file: 'nsd4.conf'}
+    - { server: 'bind', file: 'bind9.conf.j2'}
+    - { server: 'knot', file: 'knot2.conf.j2'}
+    - { server: 'nsd', file: 'nsd4.conf.j2'}
 
 - name: Check if random zones are already compressed
   stat:
@@ -43,23 +43,23 @@
   when: not stat_zones_random_result.stat.exists
 
 # Do parsed zones
-- name: Parse server templates
-  template:
+- name: Copy server templates
+  copy:
     dest: "/home/{{ansible_user}}/{{working_dir}}/{{item.dest}}"
     src: "templates/{{item.src}}"
   loop:
-    - { src: 'bind9.conf.j2', dest: "bind9r.conf" }
-    - { src: 'knot2.conf.j2', dest: "knot2r.conf" }
-    - { src: 'nsd4.conf.j2', dest: "nsd4r.conf" }
+    - { src: 'bind9.conf.j2', dest: "bind9r.conf.j2" }
+    - { src: 'knot2.conf.j2', dest: "knot2r.conf.j2" }
+    - { src: 'nsd4.conf.j2', dest: "nsd4r.conf.j2" }
     
 - name: Append zones to configurations
   command: "python3 ./tools/echoZones.py /home/{{ansible_user}}/{{working_dir}}/data/zones {{item.server}} {{item.file}} ./data/parsed_zonelist"
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/"
   loop:
-    - { server: 'bind', file: 'bind9r.conf'}
-    - { server: 'knot', file: 'knot2r.conf'}
-    - { server: 'nsd', file: 'nsd4r.conf'}
+    - { server: 'bind', file: 'bind9r.conf.j2'}
+    - { server: 'knot', file: 'knot2r.conf.j2'}
+    - { server: 'nsd', file: 'nsd4r.conf.j2'}
 
 - name: Check if zones are already compressed
   stat:
@@ -78,12 +78,12 @@
     src: "/home/{{ansible_user}}/{{working_dir}}/{{item.file}}"
     flat: yes
   loop:
-    - { dest: 'bind9.conf', file: "bind9.conf" }
-    - { dest: 'knot2.conf', file: "knot2.conf" }
-    - { dest: 'nsd4.conf', file: "nsd4.conf" }
-    - { dest: 'bind9r.conf', file: "bind9r.conf" }
-    - { dest: 'knot2r.conf', file: "knot2r.conf" }
-    - { dest: 'nsd4r.conf', file: "nsd4r.conf" }
+    - { dest: 'bind9.conf.j2', file: "bind9.conf.j2" }
+    - { dest: 'knot2.conf.j2', file: "knot2.conf.j2" }
+    - { dest: 'nsd4.conf.j2', file: "nsd4.conf.j2" }
+    - { dest: 'bind9r.conf.j2', file: "bind9r.conf.j2" }
+    - { dest: 'knot2r.conf.j2', file: "knot2r.conf.j2" }
+    - { dest: 'nsd4r.conf.j2', file: "nsd4r.conf.j2" }
 
 - name: Recover tar zone files
   fetch:

@@ -14,17 +14,17 @@ function do_replay() {
 
 	# Stats before for each target
 	for host in $targets; do
-		ssh $user@$host "cd ${wd}; ./gather_stats.sh before${host}.log"
+		ssh $user@$host "cd ${wd}; ./tools/gather_stats.sh before${host}.log"
 	done
 
 	# Replay the trace file
-	tcpprep --auto=client --cachefile=tmp.cache --pcap=$2
+	sudo tcpprep --auto=client --cachefile=tmp.cache --pcap=$2
 	sudo tcpreplay -i $interface ${rflags} tmp.cache
 	
 	# Stats after and compute
 	for host in $targets; do
-		ssh $user@$host "cd ${wd}; ./gather_stats.sh after${host}.log"
-		ssh $user@$host "cd ${wd}; ./compute_rate.sh ${pps}"
+		ssh $user@$host "cd ${wd}; ./tools/gather_stats.sh after${host}.log"
+		ssh $user@$host "cd ${wd}; ./tools/compute_rate.sh ${pps}"
 	done
 
 }
