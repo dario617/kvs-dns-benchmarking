@@ -23,4 +23,6 @@ query_avglen=$(bc <<< "scale=0; ${query_size}/${query_pkts} - $PKT_OVERHEAD")
 reply_avglen=$(bc <<< "scale=0; ${reply_size}/${reply_pkts} - $PKT_OVERHEAD")
 
 # Save results to file using suffix $1
-echo ${answered} ${query_rate} ${query_avglen} ${reply_rate} ${reply_avglen} > "{{working_dir}}/results/results-$1-$(date '+%Y%m%d-%H-%M').log"
+FILE="{{working_dir}}/results/results-$1-$(date '+%Y%m%d-%H-%M').log"
+touch $FILE
+echo ${answered} ${query_rate} ${query_avglen} ${reply_rate} ${reply_avglen} > $FILE

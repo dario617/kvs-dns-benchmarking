@@ -9,7 +9,7 @@ function do_replay() {
 	[ "${1}" -gt 0 ] && speed="-p $(( ${1} ))"
 	netmap="--netmap --nm-delay ${netmap_delay:-5}"
 	[ "${netmap_delay}" -eq 0 ] && netmap=""
-	duration="${replay_duration:-30}"
+	duration="${replay_duration}"
 	rflags="-K -q -T gtod -l 10000000 ${netmap} --duration=${duration} ${speed}"
 
 	# Stats before for each target
@@ -19,7 +19,7 @@ function do_replay() {
 
 	# Replay the trace file
 	tcpprep --auto=client --cachefile=tmp.cache --pcap=$2
-	tcpreplay -i $interface ${rflags} tmp.cache
+	sudo tcpreplay -i $interface ${rflags} tmp.cache
 	
 	# Stats after and compute
 	for host in $targets; do
