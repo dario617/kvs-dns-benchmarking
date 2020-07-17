@@ -6,15 +6,13 @@
 # 
 
 - name: Do tcpreplay from requester with random RR
-  command: './tools/measure.sh {{item}} {{pcap_file}} {{ansible_user}} "{{server_A}} {{server_B}} {{server_C}}" {{working_dir}} {{ansible_default_ipv4["interface"]}}'
+  command: 
+    argv:
+      - './tools/measure.sh {{item}} {{pcap_file}} {{ansible_user}} "{{server_A}} {{server_B}} {{server_C}}" {{working_dir}} {{ansible_default_ipv4["interface"]}}'
+      - './tools/clean_and_recover.sh "{{server_A}} {{server_B}} {{server_C}}" {{working_dir}} results-{{test_name}} {{ansible_user}}'
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}"
   with_sequence: "start={{pps_floor}} stride={{pps_step}} end={{pps_ceil}}"
-
-- name: Recover results and clean
-  command: './tools/clean_and_recover.sh "{{server_A}} {{server_B}} {{server_C}}" {{working_dir}} results-{{test_name}} {{ansible_user}}'
-  args:
-    chdir: "/home/{{ansible_user}}/{{working_dir}}"
 
 - name: Recover results from Working directory
   fetch:

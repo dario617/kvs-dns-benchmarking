@@ -14,8 +14,8 @@
 
 - name: Parse templates from master to servers
   template: 
-    src: "buffer/{{item}}"
-    dest: "/home/{{ansible_user}}/{{working_dir}}/{{item}}"
+    src: "buffer/{{item.src}}"
+    dest: "/home/{{ansible_user}}/{{working_dir}}/{{item.dest}}"
   loop:
     - { src: 'bind9.conf.j2', dest: "bind9.conf" }
     - { src: 'knot2.conf.j2', dest: "knot2.conf" }
@@ -34,12 +34,12 @@
 
 - name: Extract zones to data folder
   unarchive:
-    dest: "/home/{{ansible_user}}/{{working_dir}}/data/{{item.folder}}/"
-    src: "buffer/{{item.src}}"
+    dest: "/home/{{ansible_user}}/{{working_dir}}/data/"
+    src: "buffer/{{item}}"
     remote_src: no
   loop:
-    - { src: 'kvsZones.tgz', folder: "kvsZones" }
-    - { src: 'zones.tgz', folder: "zones" }
+    - kvsZones.tgz
+    - zones.tgz
   
 - name: Copy Script templates
   template:
@@ -56,7 +56,6 @@
     chdir: "/home/{{ansible_user}}/{{working_dir}}/"
   loop:
     - "bind9/bin/named/named -c bind9.conf -f -n {{ansible_processor_cores}} &> server.log &"
-    - $? > server.pid
   when: server == "bind9"
   
 - name: Start Knot2
@@ -64,7 +63,6 @@
     chdir: "/home/{{ansible_user}}/{{working_dir}}/"
     argv:
       - knot2/src/knotd -c knot2.conf &> server.log &
-      - $? > server.pid #Capture pid
   when: server == "knot2"
 
 - name: Start Nsd4

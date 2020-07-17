@@ -4,8 +4,14 @@
   hosts:
     - servers
   tasks:
+
+    - name: Check if proxy variable exists
+      set_fact: "mac={{proxy_mac}}"
+      when: not proxy_mac == "00:00:00:00:00:00"
+
     - name: Register server mac
       set_fact: "mac={{ansible_default_ipv4['macaddress']}}"
+      when: proxy_mac == "00:00:00:00:00:00"
 
     - name: Register server interfaces
       set_fact: "interfaces={{ansible_default_ipv4['interface']}}"

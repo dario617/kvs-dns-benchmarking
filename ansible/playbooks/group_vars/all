@@ -26,4 +26,10 @@ pps_floor: 100000
 pps_step: 10000
 pps_ceil: 1000000
 
+# Proxy mac (?)
+# If your requester machine goes through a proxy
+# and hence it can not view the other machines
+# the Ethernet layer will use this mac to route
+proxy_mac: "00:00:00:00:00:00"
+
 remote_playbook_password: dummyPasswordChangeBeforeRunning

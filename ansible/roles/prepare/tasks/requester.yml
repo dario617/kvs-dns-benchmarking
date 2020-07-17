@@ -15,15 +15,15 @@
 # Do for random queries
 - name: Copy server templates
   copy:
-    dest: "/home/{{ansible_user}}/{{working_dir}}/{{item.dest}}"
-    src: "templates/{{item.src}}"
+    dest: "/home/{{ansible_user}}/{{working_dir}}/{{item}}"
+    src: "templates/{{item}}"
   loop:
     - "bind9.conf.j2"
     - "knot2.conf.j2"
     - "nsd4.conf.j2"
     
 - name: Append zones to configurations
-  command: "python3 ./tools/echoZones.py /home/{{ansible_user}}/{{working_dir}}/data/zones {{item.file}} ./data/zonelist"
+  command: "python3 ./tools/echoZones.py /home/{{ansible_user}}/{{working_dir}}/data/zones {{item.server}} {{item.file}} ./data/zonelist"
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/"
   loop:
