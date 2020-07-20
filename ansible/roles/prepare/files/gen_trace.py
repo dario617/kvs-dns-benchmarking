@@ -119,7 +119,7 @@ for l in fd:
         print(er)
         print("Case was {}".format(str(l)))
         continue
-all_count += 1
+    all_count += 1
 fd.close()
 
 # Dump to pcap

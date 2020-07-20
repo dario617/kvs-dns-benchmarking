@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+user="{{ansible_user}}"
+targets="{{server_A}} {{server_B}} {{server_C}}"
+wd="{{working_dir}}"
+interface="{{ansible_default_ipv4['interface']}}"
+myIp="{{ansible_default_ipv4['address']}}"
+myPort={{listen_port}}

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source env_vars.sh
+
 function recover_results{
 	for host in $targets; do
     # Tar remote folder
@@ -7,13 +9,8 @@ function recover_results{
     # Clean
     ssh $user@$host "cd ${wd}; rm results/*"
     # Copy to requester machine
-    scp $user@$host:/$wd/$1.tar.gz ./
+    scp $user@$host:/$wd/$1.tar.gz /home/$user/$wd/results/$1.$host.tar.gz
 	done
 }
 
-targets=$1
-wd=$2
-testname=$3
-user=$4
-
-recover_results $testname
+recover_results $1
