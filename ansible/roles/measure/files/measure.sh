@@ -36,8 +36,7 @@ function do_replay() {
 	echo $! > tshark.pid
 
 	# Replay the trace file
-	sudo tcpprep --auto=client --cachefile=tmp.cache --pcap=$2
-	sudo tcpreplay -i $interface $rflags tmp.cache
+	sudo tcpreplay -i $interface $rflags $2
 	
 	# Give some time for packages to transit
 	sleep 5
@@ -52,9 +51,10 @@ function do_replay() {
 	tail -f --pid=$(cat tshark.pid) /dev/null
 
 	# Read results and append to file
-	cat "===== ${pps}pps, ${replay_duration}s replay duration =====" >> $out_file
+	echo "===== ${pps}pps, ${replay_duration}s replay duration =====" >> $out_file
 	cat $tmp >> $out_file
-	cat "===== end test ====\n" >> $out_file
+	echo "===== end test ====" >> $out_file
+	echo "" >> $out_file
 
 	return 0
 }

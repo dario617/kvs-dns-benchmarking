@@ -28,7 +28,7 @@ The benchmark is written for a setup of 3 server machines and one or more reques
 
 It is recommended but not required to have password-less access between the servers using an SSH-key.
 
-Each machine must have the same user and sudo password with password-less sudo.
+Each machine must have the same user with password-less sudo (same password as well).
 This was done in order to avoid setting the root user setting ssh keys with other servers.
 
 The servers must have the following ports open for the *KvsDns server* for its different backends:
