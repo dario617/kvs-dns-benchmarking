@@ -17,13 +17,13 @@
   include_tasks: responses.yml
   vars:
     - pcap_file: queries-ipv4rand.pcap
-    - test_name: random-response
+    - test_name: "random-response-{{server}}"
 
 - name: Include real response test
   include_tasks: responses.yml
   vars:
     - pcap_file: queries-ipv4real.pcap
-    - test_name: real-response
+    - test_name: "real-response-{{server}}"
 
 # Close Future
 - name: Do test with controlled system failures

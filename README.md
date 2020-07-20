@@ -1,6 +1,20 @@
 # kvs-dns-benchmarking
+```shell
+    __ ___    _______    ____  _   _______
+   / //_/ |  / / ___/   / __ \/ | / / ___/
+  / ,<  | | / /\__ \   / / / /  |/ /\__ \ 
+ / /| | | |/ /___/ /  / /_/ / /|  /___/ / 
+/_/ |_| |___//____/  /_____/_/ |_//____/  
+                                          
+    ____                  __                         __  
+   / __ )___  ____  _____/ /_  ____ ___  ____ ______/ /__
+  / __  / _ \/ __ \/ ___/ __ \/ __ `__ \/ __ `/ ___/ //_/
+ / /_/ /  __/ / / / /__/ / / / / / / / / /_/ / /  / ,<   
+/_____/\___/_/ /_/\___/_/ /_/_/ /_/ /_/\__,_/_/  /_/|_|
+```
 
 Compare the average throughput of different dns servers.
+
 It compares
 - queries per second
 - answered responeses
@@ -24,7 +38,10 @@ The servers must have the following ports open for the *KvsDns server* for its d
 
 ## Run and configuration
 
-Basic configuration requires a no root user, the IP addresses of each machine, and tests configs like which server to test, what test to run, and others. Modify the files ansible/inventory/hosts and ansible/playbooks/group_vars/all.
+Basic configuration requires a non root user, the IP addresses of each machine, and tests configs like which server to test, what test to run, and others. Modify the files:
+* ansible/inventory/hosts
+* ansible/playbooks/group_vars/all.
+* tests.conf
 
 Once the variables are written just run and follow the prompts:
 ```
