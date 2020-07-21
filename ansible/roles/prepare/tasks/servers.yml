@@ -23,7 +23,11 @@
     - { src: 'bind9r.conf.j2', dest: "bind9r.conf" }
     - { src: 'knot2r.conf.j2', dest: "knot2r.conf" }
     - { src: 'nsd4r.conf.j2', dest: "nsd4r.conf" }
-    - { src: 'env_vars.sh.j2', dest: "env_vars.sh" }
+
+- name: Send static environment vars
+  template:
+    src: templates/env_vars.sh.j2
+    dest: "/home/{{ansible_user}}/{{working_dir}}/env_vars.sh"
 
 - name: Copy zonelists
   copy:

@@ -8,7 +8,6 @@
     - start_n_load_zones
   vars:
     - server: "{{ lookup('env','SERVER')}}"
-    - test: "{{ lookup('env','TEST')}}"
     - zones: random
 
 - name: Measure for each server
@@ -18,7 +17,6 @@
     - measure
   vars:
     - server: "{{ lookup('env','SERVER')}}"
-    - test: "{{ lookup('env','TEST')}}"
     - zones: random
     
 - name: Clean and shutdown
@@ -37,7 +35,6 @@
     - start_n_load_zones
   vars:
     - server: "{{ lookup('env','SERVER')}}"
-    - test: "{{ lookup('env','TEST')}}"
     - zones: real
 
 - name: Measure for each server
@@ -47,7 +44,6 @@
     - measure
   vars:
     - server: "{{ lookup('env','SERVER')}}"
-    - test: "{{ lookup('env','TEST')}}"
     - zones: real
 
 - name: Clean and shutdown
