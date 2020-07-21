@@ -19,6 +19,7 @@
     - python3-pip
     - autoconf
     - openssl-devel
+    - bind-utils
   become: yes
 
 - name: Copy requirements file

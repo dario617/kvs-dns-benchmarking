@@ -93,6 +93,15 @@
   loop:
     - { dest: 'kvsZones.tgz', file: "kvsZones.tgz" }
     - { dest: 'zones.tgz', file: "zones.tgz" }
+
+- name: Recover zonelists
+  fetch:
+    dest: "buffer/{{item}}"
+    src: "/home/{{ansible_user}}/{{working_dir}}/data/{{item}}"
+    flat: yes
+  loop:
+    - zonelist
+    - parsed_zonelist
     
 - name: Create queries for pcap
   command: "../tools/gen_queries.sh {{item.folder}} {{queries}} {{item.output}}"

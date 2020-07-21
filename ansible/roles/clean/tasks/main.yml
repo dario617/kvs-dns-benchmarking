@@ -4,7 +4,6 @@
   command:
     argv: 
       - "kill $(cat {{working_dir}}/bind9/named.pid)"
-      - "wait $(cat {{working_dir}}/bind9/named.pid)"
   when: server == "bind9"
 
 - name: Shutdown knot2 server
@@ -16,7 +15,6 @@
   command:
     argv: 
       - kill $(cat server.pid)
-      - wait $(cat server.pid)
   when: server == "nsd4"
 
 - name: Shutdown KvsDns

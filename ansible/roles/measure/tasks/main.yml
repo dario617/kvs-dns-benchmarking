@@ -18,19 +18,20 @@
   vars:
     - pcap_file: queries-ipv4rand.pcap
     - test_name: "random-response-{{server}}"
+  when: test=="vanilla"
 
 - name: Include real response test
   include_tasks: responses.yml
   vars:
     - pcap_file: queries-ipv4real.pcap
     - test_name: "real-response-{{server}}"
+  when: test=="vanilla"
 
 # Close Future
 - name: Do test with controlled system failures
   debug: msg="Implement me!"
+  when: test=="failure"
 
 - name: Do test with memory measurement
   debug: msg="Implement me!"
-
-- name: Do test with avg time response using dig
-  debug: msg="Implement me!"
+  when: test=="memory"

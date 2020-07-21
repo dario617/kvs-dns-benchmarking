@@ -24,6 +24,15 @@
     - { src: 'knot2r.conf.j2', dest: "knot2r.conf" }
     - { src: 'nsd4r.conf.j2', dest: "nsd4r.conf" }
 
+- name: Copy zonelists
+  copy:
+    dest: "buffer/{{item}}"
+    src: "/home/{{ansible_user}}/{{working_dir}}/data/{{item}}"
+    flat: yes
+  loop:
+    - zonelist
+    - parsed_zonelist
+
 - name: Create zone extraction folders
   file:
     path: "/home/{{ansible_user}}/{{working_dir}}/data/{{item}}"
@@ -78,3 +87,6 @@
 - name: Start KvsDns client
   include_tasks: kvsDns.yml
   when: (server != "bind9" and server != "knot2" and server != "nsd4")
+
+- name: Wait for zones to load
+  script: "files/wait_zones.sh {{working_dir}}/data/zonelist"

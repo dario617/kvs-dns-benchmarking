@@ -15,6 +15,7 @@
       - python3-pip
       - autoconf
       - libssl-dev
+      - dnsutils
     become: yes
 
   - name: Copy requirements file

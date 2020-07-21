@@ -26,7 +26,7 @@
   register: populated
 
 - name: Upload data folders (may take a while)
-  command: './queryuploader -useZones true -datasetFolder ../../../data/{{item}} -clusterIPs "{{server_A}},{{server_B}},{{server_C}}" -db {{server}}'
+  command: './queryuploader -useZones -dd ../../../data/{{item}} -clusterIPs "{{server_A}},{{server_B}},{{server_C}}" -db {{server}}'
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/cmd/queryuploader"
   loop:
@@ -35,7 +35,7 @@
   when: populated.stat.size is not defined
 
 - name: Register operation
-  shell: 
-    cmd: cat "uploaded at $(date '+%Y%m%d-%H-%M')" > populated.log
+  shell: cat "uploaded at $(date '+%Y%m%d-%H-%M')" > populated.log
+  args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/"
   when: populated.stat.size is not defined

@@ -15,6 +15,8 @@
         - bc
         - tcpreplay
         - markdown
+        - wireshark
+        - tshark
       become: yes
       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
@@ -25,6 +27,7 @@
       loop:
         - bc
         - tcpreplay
+        - wireshark
       become: yes
       when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat'  
 
