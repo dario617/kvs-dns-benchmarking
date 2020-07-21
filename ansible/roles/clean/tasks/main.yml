@@ -7,13 +7,13 @@
   when: server == "bind9"
 
 - name: Shutdown knot2 server
-  shell: "./knot2/src/knotd -c knot2.conf stop"
+  shell: "./knot2/src/knotc -c knot2.conf stop"
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}"
   when: server == "knot2"
 
 - name: Shutdown nsd4 server
-  shell: kill $(cat server.pid)
+  shell: kill $(cat nsd4/nsd.pid)
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}"
   when: server == "nsd4"

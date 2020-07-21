@@ -1,0 +1,35 @@
+---
+
+- name: Recover macs and interfaces from servers
+  hosts:
+    - servers
+  tasks:
+    - name: Check if proxy variable exists
+      set_fact: "mac={{proxy_mac}}"
+      when: not proxy_mac == "00:00:00:00:00:00"
+
+    - name: Register server mac
+      set_fact: "mac={{ansible_default_ipv4['macaddress']}}"
+      when: proxy_mac == "00:00:00:00:00:00"
+
+    - name: Register server interfaces
+      set_fact: "interfaces={{ansible_default_ipv4['interface']}}"
+
+- name: Prepare PCAP files and configs
+  hosts:
+    - requester
+  roles:
+    - prepare
+  vars:
+    - requester: true
+    - macs: "{{ groups['servers'] | map('extract', hostvars, 'mac') | list | join(',')}}"
+
+- name: Push config files and zones
+  hosts:
+    - servers
+  roles:
+    - prepare
+  vars:
+    - requester: false
+    - server: "{{ lookup('env','SERVER')}}"
+    - test: "{{ lookup('env','TEST')}}"

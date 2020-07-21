@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source env_vars.sh
+
 # Adapted from KnotBenchmark
 function wait_for_zones {
   # Wait for 1% of last zones
@@ -11,7 +13,7 @@ function wait_for_zones {
 	do
 		ret=1
 		while [ $ret -ne 0 ]; do
-			${DIG} @${DIG_ADDR} -p ${PORT} +notcp +retry=0 +time=1 ${zone} SOA|grep -q NOERROR
+			dig @$myIp -p $dnsPort +notcp +retry=0 +time=1 $zone SOA|grep -q NOERROR
 			ret=$?
 			if [ $ret -ne 0 ]; then
 				sleep 1

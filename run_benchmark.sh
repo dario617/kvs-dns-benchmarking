@@ -19,6 +19,9 @@ echo -e "
 Go to ansible/inventory and ansible/playbooks/group_vars
 and set the corresponding variables.
 
+NB: Additional ssh and password setup is required as explained on 
+the README
+
 Setup should run only once.
 "
 cd ansible
@@ -42,6 +45,18 @@ if [ $doSetup == "y" ]; then
 else
     echo "Skipping setup"
 fi
+# Create a set of UDP packets and queries
+read -p 'Create queries, UDP requests and configurations? (y/n) ' doPCAP
+if [ $doPCAP == "y" ]; then
+    echo "Do queries and config setup"
+    if [ -z $daPasswd ]; then
+        ansible-playbook -K playbooks/pre_run.yml
+    else
+        ansible-playbook playbooks/pre_run.yml --extra-vars "ansible_become_pass=${daPasswd}"
+    fi
+else
+    echo "Skipping PCAP setup"
+fi
 # Tests
 read -p 'Run all tests and measure? (y/n) ' doAll
 if [ $doAll == "y" ]; then
@@ -62,3 +77,4 @@ fi
 mkdir -p results
 mv ansible/playbooks/results/* results
 echo "If everything went well results were saved at results"
+echo "Bye bye"

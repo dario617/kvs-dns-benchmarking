@@ -18,14 +18,14 @@
   vars:
     - pcap_file: queries-ipv4rand.pcap
     - test_name: "random-response-{{server}}"
-  when: test=="vanilla"
+  when: zones=="random"
 
 - name: Include real response test
   include_tasks: responses.yml
   vars:
     - pcap_file: queries-ipv4real.pcap
     - test_name: "real-response-{{server}}"
-  when: test=="vanilla"
+  when: zones=="real"
 
 # Close Future
 - name: Do test with controlled system failures

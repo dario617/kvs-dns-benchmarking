@@ -1,0 +1,54 @@
+---
+
+# For each backend we must start and then populate
+# the respective db
+
+- name: Pass Custom Makefile
+  template:
+    src: templates/Makefile.j2
+    dest: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/Makefile"
+
+- name: Start server backend
+  expect:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns"
+    command: "make run_{{server}}"
+    responses:
+      (?i)password: "{{remote_playbook_password}}"
+
+- name: Compile uploader and tools
+  command: make build_cmd
+  args:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns"
+
+- name: Check for populated.log
+  stat:
+    path: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/populated.log"
+  register: populated
+
+- name: Upload data folders (may take a while)
+  command: './queryuploader -useZones -dd ../../../data/{{kvsDir}} -clusterIPs "{{server_A}},{{server_B}},{{server_C}}" -db {{server}}'
+  args:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/cmd/queryuploader"
+  when: populated.stat.size is not defined and server==cassandra
+
+- name: Upload data folders (may take a while)
+  command: './queryuploader -useZones -dd ../../../data/{{kvsDir}} -clusterIPs {{server_ips}} -db {{server}}'
+  args:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/cmd/queryuploader"
+  vars:
+    - server_ips: "{{server_A}}:7001,{{server_A}}:7002,{{server_B}}:7003,{{server_B}}:7004,{{server_C}}:7005,{{server_C}}:7006"
+  when: populated.stat.size is not defined and server==redis
+
+- name: Upload data folders (may take a while)
+  command: './queryuploader -useZones -dd ../../../data/{{kvsDir}} -clusterIPs {{server_ips}} -db {{server}}'
+  args:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/cmd/queryuploader"
+  vars:
+    - server_ips: "{{server_A}}:2379,{{server_B}}:2379,{{server_C}}:2379"
+  when: populated.stat.size is not defined and server==etcd
+
+- name: Register operation
+  shell: cat "uploaded at $(date '+%Y%m%d-%H-%M')" > populated.log
+  args:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/"
+  when: populated.stat.size is not defined

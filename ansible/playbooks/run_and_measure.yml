@@ -1,39 +1,15 @@
 ---
 
-- name: Recover macs and interfaces from servers
-  hosts:
-    - servers
-  tasks:
-
-    - name: Check if proxy variable exists
-      set_fact: "mac={{proxy_mac}}"
-      when: not proxy_mac == "00:00:00:00:00:00"
-
-    - name: Register server mac
-      set_fact: "mac={{ansible_default_ipv4['macaddress']}}"
-      when: proxy_mac == "00:00:00:00:00:00"
-
-    - name: Register server interfaces
-      set_fact: "interfaces={{ansible_default_ipv4['interface']}}"
-
-- name: Prepare PCAP files and configs
-  hosts:
-    - requester
-  roles:
-    - prepare
-  vars:
-    - requester: true
-    - macs: "{{ groups['servers'] | map('extract', hostvars, 'mac') | list | join(',')}}"
-
-- name: Push config files and zones
+# Random generated zones
+- name: Start dns server
   hosts:
     - servers
   roles:
-    - prepare
+    - start_n_load_zones
   vars:
-    - requester: false
     - server: "{{ lookup('env','SERVER')}}"
     - test: "{{ lookup('env','TEST')}}"
+    - zones: random
 
 - name: Measure for each server
   hosts:
@@ -43,6 +19,36 @@
   vars:
     - server: "{{ lookup('env','SERVER')}}"
     - test: "{{ lookup('env','TEST')}}"
+    - zones: random
+    
+- name: Clean and shutdown
+  hosts:
+    - servers
+  roles:
+    - clean
+  vars:
+    - server: "{{ lookup('env','SERVER')}}"
+
+# Scrapped and parsed zones
+- name: Start dns server
+  hosts:
+    - servers
+  roles:
+    - start_n_load_zones
+  vars:
+    - server: "{{ lookup('env','SERVER')}}"
+    - test: "{{ lookup('env','TEST')}}"
+    - zones: real
+
+- name: Measure for each server
+  hosts:
+    - requester
+  roles:
+    - measure
+  vars:
+    - server: "{{ lookup('env','SERVER')}}"
+    - test: "{{ lookup('env','TEST')}}"
+    - zones: real
 
 - name: Clean and shutdown
   hosts:
