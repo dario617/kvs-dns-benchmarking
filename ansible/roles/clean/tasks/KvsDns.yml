@@ -1,7 +1,9 @@
 ---
 
 - name: Kill go client on machine
-  command: "kill $(cat ./{{working_dir}}/KvsDns/kvsDns.pid"
+  shell: "kill $(cat KvsDns/kvsDns.pid)"
+  args:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}"
   when: not orchestrate
 
 - name: Shutdown redis backend

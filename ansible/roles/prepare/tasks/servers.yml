@@ -60,18 +60,15 @@
     - { src: 'compute_rate.sh.j2', dest: "compute_rate.sh" }
 
 - name: Start Bind9 server
-  shell: "{{item}}"
+  shell: "bind9/bin/named/named -c bind9.conf -f -n {{ansible_processor_cores}} &> server.log &"
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/"
-  loop:
-    - "bind9/bin/named/named -c bind9.conf -f -n {{ansible_processor_cores}} &> server.log &"
   when: server == "bind9"
   
 - name: Start Knot2
-  shell:
+  shell: knot2/src/knotd -c knot2.conf &> server.log &
+  args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/"
-    argv:
-      - knot2/src/knotd -c knot2.conf &> server.log &
   when: server == "knot2"
 
 - name: Start Nsd4
