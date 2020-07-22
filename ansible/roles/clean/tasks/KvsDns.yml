@@ -4,12 +4,12 @@
   shell: "kill $(cat KvsDns/kvsDns.pid)"
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}"
-  when: not orchestrate
 
-- name: Shutdown redis backend
+- name: Shutdown kvs backend
   expect:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/scripts/ansible"
     command: "ansible-playbook -K playbooks/{{server}}_down.yml"
+    timeout: null
     responses:
       (?i)password: "{{remote_playbook_password}}"
-  when: orchestrate
+  when: (orchestrate is defined) and orchestrate
