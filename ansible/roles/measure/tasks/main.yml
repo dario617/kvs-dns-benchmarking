@@ -27,11 +27,25 @@
     - test_name: "real-response-{{server}}"
   when: zones=="real"
 
+# Response times
+
+- name: Include random response times
+  include_tasks: times.yml
+  vars:
+    - test_name: "random-times-{{server}}"
+    - zonelist: zonelist
+  when: zones=="random"
+
+- name: Include random response times
+  include_tasks: times.yml
+  vars:
+    - test_name: "real-times-{{server}}"
+    - zonelist: parsed_zonelist
+  when: zones=="real"
+
 # Close Future
 - name: Do test with controlled system failures
   debug: msg="Implement me!"
-  when: test=="failure"
 
 - name: Do test with memory measurement
   debug: msg="Implement me!"
-  when: test=="memory"

@@ -3,3 +3,4 @@ scapy==2.4.3
 gdown>=3.11.1
 pexpect
 ply>=3.11
+numpy

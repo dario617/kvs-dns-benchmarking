@@ -1,0 +1,32 @@
+---
+
+# Define the followinf variables when including
+# test_name
+# zonelist
+
+- name: Do requests
+  script: "files/get_times.sh ./data/{{zonelist}} 2 ./results/results-{{test_name}}.log"
+  args:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}"
+
+- name: Do Compute times
+  command: "python3 ./tools/compute_avg.py ./results/ results-{{test_name}}.log -o ./results/results-stats-{{test_name}}.log"
+  args:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}"
+
+- name: Recover results from requester
+  fetch:     
+    src: "/home/{{ansible_user}}/{{working_dir}}/results/{{item}}"
+    dest: "results/{{test_name}}/{{item}}"
+    flat: yes
+  loop:
+    - "results-{{test_name}}.log"
+    - "results-stats-{{test_name}}.log"
+
+- name: Remove file from requester
+  file:
+    state: absent
+    path: "/home/{{ansible_user}}/{{working_dir}}/results/{{item}}"
+  loop:
+    - "results-{{test_name}}.log"  
+    - "results-stats-{{test_name}}.log"
