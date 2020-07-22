@@ -1,0 +1,15 @@
+---
+
+- name: Start random server killer
+  shell: "./tools/random_killer.sh {{server}} &"
+  args:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}"
+
+- name: Include responses tasks
+  include_tasks: responses.yml
+
+  # This might be unecessary
+- name: Stop random server killer
+  shell: "kill $(cat killer.pid)"
+  args:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}"

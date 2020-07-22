@@ -17,8 +17,10 @@ function dig_zones {
   do
     while read zone;
     do
-      ret=1
-      dig @$myIp -p $dnsPort +notcp $zone SOA | grep "Query time" | awk '{print $4, $5}' >> $3
+      for target in $targets
+      do
+        dig @$target -p $dnsPort +notcp $zone SOA | grep "Query time" | awk '{print $4, $5}' >> $3
+      done
     done < <(tail -n ${portion} ${zonelist})
   done
 }
