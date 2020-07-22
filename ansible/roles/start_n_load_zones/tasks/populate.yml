@@ -12,6 +12,7 @@
   expect:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns"
     command: "make run_{{server}}"
+    timeout: null
     responses:
       (?i)password: "{{remote_playbook_password}}"
 
@@ -22,14 +23,14 @@
 
 - name: Check for populated.log
   stat:
-    path: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/populated.log"
+    path: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/populated-{{server}}-{{zones}}.log"
   register: populated
 
 - name: Upload data folders (may take a while)
   command: './queryuploader -useZones -dd ../../../data/{{kvsDir}} -clusterIPs "{{server_A}},{{server_B}},{{server_C}}" -db {{server}}'
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/cmd/queryuploader"
-  when: populated.stat.size is not defined and server==cassandra
+  when: populated.stat.size is not defined and server=="cassandra"
 
 - name: Upload data folders (may take a while)
   command: './queryuploader -useZones -dd ../../../data/{{kvsDir}} -clusterIPs {{server_ips}} -db {{server}}'
@@ -37,7 +38,7 @@
     chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/cmd/queryuploader"
   vars:
     - server_ips: "{{server_A}}:7001,{{server_A}}:7002,{{server_B}}:7003,{{server_B}}:7004,{{server_C}}:7005,{{server_C}}:7006"
-  when: populated.stat.size is not defined and server==redis
+  when: populated.stat.size is not defined and server=="redis"
 
 - name: Upload data folders (may take a while)
   command: './queryuploader -useZones -dd ../../../data/{{kvsDir}} -clusterIPs {{server_ips}} -db {{server}}'
@@ -45,10 +46,10 @@
     chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/cmd/queryuploader"
   vars:
     - server_ips: "{{server_A}}:2379,{{server_B}}:2379,{{server_C}}:2379"
-  when: populated.stat.size is not defined and server==etcd
+  when: populated.stat.size is not defined and server=="etcd"
 
 - name: Register operation
-  shell: cat "uploaded at $(date '+%Y%m%d-%H-%M')" > populated.log
+  shell: "echo \"uploaded at $(date '+%Y%m%d-%H-%M')\" > populated-{{server}}-{{zones}}.log"
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/"
   when: populated.stat.size is not defined

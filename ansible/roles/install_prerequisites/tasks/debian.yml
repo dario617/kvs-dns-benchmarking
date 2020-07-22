@@ -16,6 +16,7 @@
       - autoconf
       - libssl-dev
       - dnsutils
+      - ansible
     become: yes
 
   - name: Copy requirements file

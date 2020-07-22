@@ -9,7 +9,7 @@ BINARY_NAME=KvsDns
 # Select from cassandra,redis,etcd
 DB={{server}}
 ifeq ($(DB),cassandra)
-CLUSTER_IPS="{{server_A,server_B,server_C}}"
+CLUSTER_IPS="{{server_A}},{{server_B}},{{server_C}}"
 else
 ifeq ($(DB),redis)
 CLUSTER_IPS="{{server_A}}:7001,{{server_A}}:7002,{{server_B}}:7003,{{server_B}}:7004,{{server_C}}:7005,{{server_C}}:7006"
