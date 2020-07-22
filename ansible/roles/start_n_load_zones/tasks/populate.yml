@@ -26,13 +26,13 @@
     path: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/populated-{{server}}-{{zones}}.log"
   register: populated
 
-- name: Upload data folders (may take a while)
+- name: Upload data folders (may take a while) for Cassandra
   command: './queryuploader -useZones -dd ../../../data/{{kvsDir}} -clusterIPs "{{server_A}},{{server_B}},{{server_C}}" -db {{server}}'
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/cmd/queryuploader"
   when: populated.stat.size is not defined and server=="cassandra"
 
-- name: Upload data folders (may take a while)
+- name: Upload data folders (may take a while) for Redis
   command: './queryuploader -useZones -dd ../../../data/{{kvsDir}} -clusterIPs {{server_ips}} -db {{server}}'
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/cmd/queryuploader"
@@ -40,7 +40,7 @@
     - server_ips: "{{server_A}}:7001,{{server_A}}:7002,{{server_B}}:7003,{{server_B}}:7004,{{server_C}}:7005,{{server_C}}:7006"
   when: populated.stat.size is not defined and server=="redis"
 
-- name: Upload data folders (may take a while)
+- name: Upload data folders (may take a while) for Etcd
   command: './queryuploader -useZones -dd ../../../data/{{kvsDir}} -clusterIPs {{server_ips}} -db {{server}}'
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/cmd/queryuploader"
