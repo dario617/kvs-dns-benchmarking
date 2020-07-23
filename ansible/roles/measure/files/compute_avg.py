@@ -23,6 +23,8 @@ if __name__ == "__main__":
     print("Reading...")
     for line in f:
       vals = line.strip().split(" ")
+      if len(vals) != 2:
+        continue
       tmp.append(float(vals[0])*parseSec(vals[1]))
 
   total = np.array(tmp, dtype=np.float32)

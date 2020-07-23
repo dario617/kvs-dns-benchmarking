@@ -43,9 +43,21 @@
     - zonelist: parsed_zonelist
   when: zones=="real"
 
-# Close Future
-- name: Do test with controlled system failures
-  debug: msg="Implement me!"
+# Controlled failure
+- name: Include Controlled system failures
+  include_tasks: shutdowns.yml
+  vars:
+    - test_name: "random-segfault-{{server}}"
+    - zonelist: zonelist
+  when: zones=="random"
 
+- name: Include Controlled system failures
+  include_tasks: shutdowns.yml
+  vars:
+    - test_name: "real-segfault-{{server}}"
+    - zonelist: parsed_zonelist
+  when: zones=="real"
+
+  # Close Future
 - name: Do test with memory measurement
   debug: msg="Implement me!"

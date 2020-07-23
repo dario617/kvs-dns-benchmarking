@@ -10,7 +10,7 @@
     chdir: "/home/{{ansible_user}}/{{working_dir}}"
 
 - name: Do Compute times
-  command: "python3 ./tools/compute_avg.py ./results/ results-{{test_name}}.log -o ./results/results-stats-{{test_name}}.log"
+  command: "python3 ./tools/compute_avg.py -o ./results/results-stats-{{test_name}}.log ./results/results-{{test_name}}.log"
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}"
 
