@@ -57,7 +57,3 @@
     - test_name: "real-segfault-{{server}}"
     - zonelist: parsed_zonelist
   when: zones=="real"
-
-  # Close Future
-- name: Do test with memory measurement
-  debug: msg="Implement me!"

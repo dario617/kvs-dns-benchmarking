@@ -1,14 +1,17 @@
 ---
 
 # Random generated zones
-- name: Start dns server
+- name: Start dns server and get stats
   hosts:
     - servers
   roles:
+    - stats
     - start_n_load_zones
   vars:
     - server: "{{ lookup('env','SERVER')}}"
     - zones: random
+    - opt: before
+    - test_name: random
 
 - name: Measure for each server
   hosts:
@@ -24,18 +27,25 @@
     - servers
   roles:
     - clean
+    - stats
   vars:
     - server: "{{ lookup('env','SERVER')}}"
-
+    - opt: after
+    - test_name: random
+    
 # Scrapped and parsed zones
-- name: Start dns server
+      
+- name: Start dns server and get stats
   hosts:
     - servers
   roles:
+    - stats
     - start_n_load_zones
   vars:
     - server: "{{ lookup('env','SERVER')}}"
     - zones: real
+    - opt: before
+    - test_name: real
 
 - name: Measure for each server
   hosts:
@@ -51,5 +61,8 @@
     - servers
   roles:
     - clean
+    - stats
   vars:
     - server: "{{ lookup('env','SERVER')}}"
+    - opt: after
+    - test_name: real
