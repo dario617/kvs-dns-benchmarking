@@ -27,21 +27,32 @@
   register: populated
 
 - name: Upload data folders (may take a while) for Cassandra
-  command: './queryuploader -useZones -dd ../../../data/{{kvsDir}} -clusterIPs "{{server_A}},{{server_B}},{{server_C}}" -db {{server}}'
+  shell: './queryuploader -useZones -dd ../../../data/{{kvsDir}} -clusterIPs "{{server_A}},{{server_B}},{{server_C}}" -db {{server}} > upload.log'
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/cmd/queryuploader"
   when: populated.stat.size is not defined and server=="cassandra"
 
 - name: Upload data folders (may take a while) for Redis
-  command: './queryuploader -useZones -dd ../../../data/{{kvsDir}} -clusterIPs {{server_ips}} -db {{server}}'
+  shell: './queryuploader -useZones -dd ../../../data/{{kvsDir}} -clusterIPs {{server_ips}} -db {{server}} > upload.log'
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/cmd/queryuploader"
   vars:
     - server_ips: "{{server_A}}:7001,{{server_A}}:7002,{{server_B}}:7003,{{server_B}}:7004,{{server_C}}:7005,{{server_C}}:7006"
   when: populated.stat.size is not defined and server=="redis"
 
+- name: Wait for etcd to load
+  wait_for:
+    host: "{{item}}"
+    port: 2379
+    delay: 10
+  loop:
+    - "{{server_A}}"
+    - "{{server_B}}"
+    - "{{server_C}}"
+  when: server=="etcd"
+
 - name: Upload data folders (may take a while) for Etcd
-  command: './queryuploader -useZones -dd ../../../data/{{kvsDir}} -clusterIPs {{server_ips}} -db {{server}}'
+  shell: './queryuploader -useZones -dd ../../../data/{{kvsDir}} -clusterIPs {{server_ips}} -db {{server}} > upload.log'
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns/cmd/queryuploader"
   vars:
