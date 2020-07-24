@@ -4,6 +4,7 @@
   shell: "kill $(cat KvsDns/kvsDns.pid)"
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}"
+  ignore_errors: True
 
 - name: Shutdown kvs backend
   expect:

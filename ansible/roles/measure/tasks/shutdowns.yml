@@ -1,7 +1,7 @@
 ---
 
 - name: Start random server killer
-  shell: "./tools/random_killer.sh {{server}} &"
+  shell: "nohup ./tools/random_killer.sh {{server}} </dev/null >/dev/null 2>&1 &"
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}"
 
@@ -13,3 +13,4 @@
   shell: "kill $(cat killer.pid)"
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}"
+  ignore_errors: yes

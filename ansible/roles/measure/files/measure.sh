@@ -7,7 +7,7 @@ netmap_delay=0
 average_packet_size=200
 buffer_size=40 # In MBs
 measure_period=10
-wait_time=30
+wait_time=40
 
 function do_replay() {
 	# Prepare tcpreplay flags
