@@ -17,6 +17,7 @@
       - libssl-dev
       - dnsutils
       - ansible
+      - sysstat
     become: yes
 
   - name: Copy requirements file

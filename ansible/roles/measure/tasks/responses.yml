@@ -24,6 +24,12 @@
     - "results-{{test_name}}.{{server_A}}.tar.gz"
     - "results-{{test_name}}.{{server_B}}.tar.gz"
     - "results-{{test_name}}.{{server_C}}.tar.gz"
+    - "results-{{test_name}}-mem.{{server_A}}.tar.gz"
+    - "results-{{test_name}}-mem.{{server_B}}.tar.gz"
+    - "results-{{test_name}}-mem.{{server_C}}.tar.gz"
+    - "results-{{test_name}}-cpu.{{server_A}}.tar.gz"
+    - "results-{{test_name}}-cpu.{{server_B}}.tar.gz"
+    - "results-{{test_name}}-cpu.{{server_C}}.tar.gz"
     - "wireshark-{{test_name}}.log"
 
 - name: Remove file from requester
@@ -34,4 +40,10 @@
     - "results-{{test_name}}.{{server_A}}.tar.gz"  
     - "results-{{test_name}}.{{server_B}}.tar.gz"
     - "results-{{test_name}}.{{server_C}}.tar.gz"
+    - "results-{{test_name}}-mem.{{server_A}}.tar.gz"  
+    - "results-{{test_name}}-mem.{{server_B}}.tar.gz"
+    - "results-{{test_name}}-mem.{{server_C}}.tar.gz"
+    - "results-{{test_name}}-cpu.{{server_A}}.tar.gz"
+    - "results-{{test_name}}-cpu.{{server_B}}.tar.gz"
+    - "results-{{test_name}}-cpu.{{server_C}}.tar.gz"
     - "wireshark-{{test_name}}.log"

@@ -21,6 +21,7 @@
     - openssl-devel
     - bind-utils
     - ansible
+    - sysstat
   become: yes
 
 - name: Copy requirements file

@@ -3,27 +3,24 @@
 source env_vars.sh
 
 function dig_zones {
-  # Wait for 20% of last zones
+  # Dig for 1% of last zones
 	# Probabilistic, but digging 1M+ times is too slow and affects the results
 	zonelist="$1"
 	zonecount=$(cat ${zonelist}|wc -l)
-	portion=$(( ${zonecount} / 100 + 20 ))
+	portion=$(( ${zonecount} / 100 + 1 ))
   
   # Reset file
-  touch $3
-  echo "" > $3
+  touch $2
+  echo "" > $2
 
-  for i in {$2..1}
+  while read zone;
   do
-    while read zone;
+    for target in $targets
     do
-      for target in $targets
-      do
-        dig @$target -p $myPort +notcp $zone SOA | grep "Query time" | awk '{print $4, $5}' >> $3
-      done
-    done < <(tail -n ${portion} ${zonelist})
-  done
+      dig @$target -p $myPort +notcp $zone SOA | grep "Query time" | awk '{print $4, $5}' >> $2
+    done
+  done < <(tail -n ${portion} ${zonelist})
 }
 
-# As dig_zones file repeat out
-dig_zones $1 $2 $3
+# As dig_zones file out
+dig_zones $1 $2

@@ -5,7 +5,7 @@
 # zonelist
 
 - name: Do requests
-  script: "files/get_times.sh ./data/{{zonelist}} 2 ./results/results-{{test_name}}.log"
+  script: "files/get_times.sh ./data/{{zonelist}} ./results/results-{{test_name}}.log"
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}"
 
