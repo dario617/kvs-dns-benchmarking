@@ -10,7 +10,7 @@
   vars:
     - server: "{{ lookup('env','SERVER')}}"
     - zones: random
-    - opt: before
+    - op: before
     - test_name: random
 
 - name: Measure for each server
@@ -30,7 +30,7 @@
     - stats
   vars:
     - server: "{{ lookup('env','SERVER')}}"
-    - opt: after
+    - op: after
     - test_name: random
     
 # Scrapped and parsed zones
@@ -44,7 +44,7 @@
   vars:
     - server: "{{ lookup('env','SERVER')}}"
     - zones: real
-    - opt: before
+    - op: before
     - test_name: real
 
 - name: Measure for each server
@@ -64,5 +64,5 @@
     - stats
   vars:
     - server: "{{ lookup('env','SERVER')}}"
-    - opt: after
+    - op: after
     - test_name: real
