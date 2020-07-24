@@ -55,7 +55,7 @@ cnt=0
 victim=""
 for t in $targets; do
   [[ $cnt == $custom_id ]] && victim=$t && break
-  cnt=$($cnt+1)
+  cnt=$(bc <<< $cnt+1)
 done
 
 [[ $server == "bind9" ]] && kill_bind $victim
