@@ -25,6 +25,7 @@ queries: 100000
 pps_floor: 100000
 pps_step: 10000
 pps_ceil: 1000000
+shutdown_ceil: 20000 # A lower boundary for system failure tests
 
 # Proxy mac (?)
 # If your requester machine goes through a proxy
