@@ -36,7 +36,7 @@
     - zonelist: zonelist
   when: zones=="random"
 
-- name: Include random response times
+- name: Include real response times
   include_tasks: times.yml
   vars:
     - test_name: "real-times-{{server}}"
@@ -44,16 +44,18 @@
   when: zones=="real"
 
 # Controlled failure
-- name: Include Controlled system failures
+- name: Include Controlled system failures random data
   include_tasks: shutdowns.yml
   vars:
     - test_name: "random-segfault-{{server}}"
+    - pcap_file: queries-ipv4rand.pcap
     - zonelist: zonelist
   when: zones=="random"
 
-- name: Include Controlled system failures
+- name: Include Controlled system failures real data
   include_tasks: shutdowns.yml
   vars:
     - test_name: "real-segfault-{{server}}"
     - zonelist: parsed_zonelist
+    - pcap_file: queries-ipv4real.pcap
   when: zones=="real"

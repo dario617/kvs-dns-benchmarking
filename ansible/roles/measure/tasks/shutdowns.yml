@@ -7,6 +7,8 @@
 
 - name: Include responses tasks
   include_tasks: responses.yml
+  vars:
+    - shutdown_pps_top: "{{shutdown_ceil}}"
 
   # This might be unecessary
 - name: Stop random server killer
