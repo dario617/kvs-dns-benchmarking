@@ -1,20 +1,20 @@
 
 - name: Get memory snapshot
-  shell: "free -m|awk '{print $3}'|tail -n 2 >> mem-{{server}}-{{test_name}}-{{ansible_default_ipv4.address}}.log"
+  shell: "free -m|awk '{print $3}'|tail -n 2 >> mem-usage-{{server}}-{{test_name}}-{{ansible_default_ipv4.address}}.log"
   args:
-    chdir: "/home/{{ansible_user}}/{{working_dir}}/results" 
+    chdir: "/home/{{ansible_user}}/{{working_dir}}" 
   when: op=="before"
 
 - name: Get memory snapshot
-  script: "files/get_mem.sh mem-{{server}}-{{test_name}}-{{ansible_default_ipv4.address}}.log"
+  script: "files/get_mem.sh mem-usage-{{server}}-{{test_name}}-{{ansible_default_ipv4.address}}.log"
   args:
-    chdir: "/home/{{ansible_user}}/{{working_dir}}/results"
+    chdir: "/home/{{ansible_user}}/{{working_dir}}"
   when: op=="after"
 
 - name: Recover stats
   fetch:
-    src: "/home/{{ansible_user}}/{{working_dir}}/results/mem-{{server}}-{{test_name}}-{{ansible_default_ipv4.address}}.log"
-    dest: "results/mem-{{test_name}}/mem-{{server}}-{{test_name}}-{{ansible_default_ipv4.address}}.log"
+    src: "/home/{{ansible_user}}/{{working_dir}}/mem-usage-{{server}}-{{test_name}}-{{ansible_default_ipv4.address}}.log"
+    dest: "results/mem-{{test_name}}/mem-usage-{{server}}-{{test_name}}-{{ansible_default_ipv4.address}}.log"
     flat: yes
   when: op=="after"
 
