@@ -75,6 +75,6 @@ fi
 
 # Move results to another folder over here
 mkdir -p results
-mv ansible/playbooks/results/* results
+mv playbooks/results/* ../results
 echo "If everything went well results were saved at results"
 echo "Bye bye"
