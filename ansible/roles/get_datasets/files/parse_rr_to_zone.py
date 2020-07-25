@@ -22,25 +22,34 @@ def createTree(root_dict, fqd, rr, value, ttl):
   if len(tokens) != 2:
     sub_domain = ".".join(tokens[0:-2])
   try:
+    # We want to avoid sorting the entries in
+    # case there's a DNAME record
+    fixed_rr = rr
+    if rr == "DNAME":
+      fixed_rr = "CNAME"
     if not (tokens[-1] in root_dict):
       root_dict[tokens[-1]] = dict()
     if not (tokens[-2] in root_dict[tokens[-1]]):
       root_dict[tokens[-1]][tokens[-2]] = dict()
     if not (sub_domain in root_dict[tokens[-1]][tokens[-2]]):
       root_dict[tokens[-1]][tokens[-2]][sub_domain] = dict()
-    if not (rr in root_dict[tokens[-1]][tokens[-2]][sub_domain]):
-      if rr != "SOA" and rr != "TXT":
-        root_dict[tokens[-1]][tokens[-2]][sub_domain][rr] = set()
+    if not (fixed_rr in root_dict[tokens[-1]][tokens[-2]][sub_domain]):
+      if fixed_rr != "SOA" and fixed_rr != "TXT":
+        root_dict[tokens[-1]][tokens[-2]][sub_domain][fixed_rr] = set()
 
     # Add value
-    if rr != "SOA" and rr != "TXT":
-      root_dict[tokens[-1]][tokens[-2]][sub_domain][rr].add(value)
-      #root_dict[tokens[-1]][tokens[-2]][sub_domain][rr+"TTL"] = ttl
+    if fixed_rr != "SOA" and fixed_rr != "TXT":
+      root_dict[tokens[-1]][tokens[-2]][sub_domain][fixed_rr].add(value)
+      #root_dict[tokens[-1]][tokens[-2]][sub_domain][fixed_rr+"TTL"] = ttl
     else:
-      root_dict[tokens[-1]][tokens[-2]][sub_domain][rr] = value
+      # Escape unfit characters
+      if fixed_rr == "SOA" and ( ("\\" in value) or ("+" in value) or ("@" in value) ):
+        value = value.replace("\\","")
+        value = value.replace("+","")
+        value = value.replace("@","")
+      root_dict[tokens[-1]][tokens[-2]][sub_domain][fixed_rr] = value
   except Exception as e:
     logger.error("Error %s at domain %s",e, fqd)
-
 
 def exportDomainsToFile(root_dict, single_file, default_ttl="1d", soa="default"):
   """
@@ -52,6 +61,7 @@ def exportDomainsToFile(root_dict, single_file, default_ttl="1d", soa="default")
     soa_v = soa
   c_zones = 0
   c_soas = 0
+  c_rr = 0
 
   zone_list = []
 
@@ -71,6 +81,7 @@ def exportDomainsToFile(root_dict, single_file, default_ttl="1d", soa="default")
         file.write("$TTL "+default_ttl+"\n")
         soa_recovered = ""
         values = list()
+        cname_tld = False
         for subdomain in sub_domains:
           if subdomain not in rrs:
             records = sub_domains[subdomain]
@@ -78,6 +89,8 @@ def exportDomainsToFile(root_dict, single_file, default_ttl="1d", soa="default")
               current_sub_dom = subdomain + "."
               if subdomain == "n_v":
                 current_sub_dom = ""
+                if record == "CNAME":
+                  cname_tld = True
               if record == "TXT":
                 values.append(current_sub_dom+domain + "." + tld + ".  IN  "+record+"  "+records[record]+"\n")
               elif record == "SOA":
@@ -97,9 +110,17 @@ def exportDomainsToFile(root_dict, single_file, default_ttl="1d", soa="default")
           soa_recovered = soa_v
         else:
           c_soas = c_soas + 1
-        file.write(domain + "." + tld + ".  IN  SOA  "+soa_recovered+"\n")
+        # CNAME at sub top level domain like "domain.com" are not allowed
+        # to have other than  it's CNAME RR
+        if not cname_tld:
+          file.write(domain + "." + tld + ".  IN  SOA  "+soa_recovered+"\n")
+          c_rr = c_rr + 1
         for rr in values:
-          file.write(rr)
+          if cname_tld and ("CNAME" in rr):
+            file.write(rr)
+          else:
+            file.write(rr)
+          c_rr = c_rr + 1
         if single_file != False:
           file.write("\n")
       zone_list.append(domain+"."+tld)
@@ -107,9 +128,9 @@ def exportDomainsToFile(root_dict, single_file, default_ttl="1d", soa="default")
   
   with open("parsed_zonelist", "w") as f:
     for line in zone_list:
-      f.write(line+"\n")
+      f.write(line+".\n")
 
-  return c_zones, c_soas
+  return c_zones, c_soas, c_rr
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description="Recover Zones from a list of RR to multiple files")
@@ -135,5 +156,5 @@ if __name__ == "__main__":
       c = c + 1
   logger.info("Records: %s",c)
   logger.info("Saving as zone files...")
-  zones, soa_used = exportDomainsToFile(rr_tree, args.output_file)
-  logger.info("Created %d zones and recovered %d soa records", zones, soa_used)
+  zones, soa_used, written_rr = exportDomainsToFile(rr_tree, args.output_file)
+  logger.info("Created %d zones, recovered %d soa records, wrote %d rr", zones, soa_used, written_rr)
