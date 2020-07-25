@@ -112,7 +112,7 @@ def exportDomainsToFile(root_dict, single_file, default_ttl="1d", soa="default")
           c_soas = c_soas + 1
         # CNAME at sub top level domain like "domain.com" are not allowed
         # to have other than  it's CNAME RR
-        if not cname_tld:
+        if not cname_tld and len(values) > 1:
           file.write(domain + "." + tld + ".  IN  SOA  "+soa_recovered+"\n")
           c_rr = c_rr + 1
         for rr in values:
