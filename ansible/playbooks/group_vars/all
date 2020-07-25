@@ -18,7 +18,7 @@ working_dir: dns-bench
 listen_port: 8053
 
 # Test related configs
-total_random_zone_count: 1000000
+total_random_zone_count: 200000
 queries: 100000
 
 # Packets per second configs
