@@ -38,7 +38,7 @@
     - zone.tpl
 
 - name: Recover only A,HINFO,TXT records from dataset
-  shell: grep -E "A|HINFO|TXT" dns-rr.txt > dataset.txt
+  shell: grep -v -E "CNAME|DNAME" | grep -E "A|HINFO|TXT" dns-rr.txt > dataset.txt
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/data"
 

@@ -114,7 +114,7 @@ def exportDomainsToFile(root_dict, single_file, default_ttl="1d", soa="default")
         # Check that we have a valid SOA
         add_soa_rr = False
         if soa_recovered == "":
-          soa_recovered =  "ns1."+domain+"."+tld+". admin.mail"+domain+"."+tld+". "+soa_v
+          soa_recovered =  "ns1."+domain+"."+tld+". admin.mail."+domain+"."+tld+". "+soa_v
           add_soa_rr = True
         else:
           c_soas = c_soas + 1
@@ -133,7 +133,7 @@ def exportDomainsToFile(root_dict, single_file, default_ttl="1d", soa="default")
         if add_ns or add_soa_rr:
             file.write(domain + "." + tld + ".  IN  NS  ns1."+domain+"."+tld+".\n")
             file.write("ns1."+domain + "." + tld + ".  IN  A  192.0.0.1\n")
-            file.write(domain + "." + tld + ".  IN  MX  mail."+domain+"."+tld+".\n")
+            file.write(domain + "." + tld + ".  IN  MX  10 mail."+domain+"."+tld+".\n")
             file.write("mail."+domain + "." + tld + ".  IN  A  192.0.0.2\n")
             c_rr = c_rr + 4
         # Add all the remaining RR
