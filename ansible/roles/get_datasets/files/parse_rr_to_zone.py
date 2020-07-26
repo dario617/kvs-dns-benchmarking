@@ -56,7 +56,7 @@ def exportDomainsToFile(root_dict, single_file, default_ttl="1d", soa="default")
   Write zones to one or multiple file zones and create a lists of available domains
   """
   rrs = ["A", "TXT", "SOA", "HINFO", "MX", "CNAME", "NS"]
-  soa_v = "ns.example.com. username.example.com. ( 2000073131 1d 2h 4w 1h )"
+  soa_v = "( 2000073131 1d 2h 4w 1h )"
   if soa != "default":
     soa_v = soa
   c_zones = 0
@@ -75,6 +75,7 @@ def exportDomainsToFile(root_dict, single_file, default_ttl="1d", soa="default")
         file_name = single_file
         mode = "a"
       with open(file_name,mode) as file:
+
         # Write domain name
         file.write("$ORIGIN "+domain + "." + tld + ".\n")
         # Write default TTL
@@ -82,6 +83,8 @@ def exportDomainsToFile(root_dict, single_file, default_ttl="1d", soa="default")
         soa_recovered = ""
         values = list()
         cname_tld = False
+
+        # Recover all RR for this domain
         for subdomain in sub_domains:
           if subdomain not in rrs:
             records = sub_domains[subdomain]
@@ -105,9 +108,14 @@ def exportDomainsToFile(root_dict, single_file, default_ttl="1d", soa="default")
             print(subdomain, domain, tld)
             exit(0)
             values.append(domain + "." + tld + ".  IN  "+subdomain+"  "+sub_domains[subdomain]+"\n")
-        # Save to file
+        #
+        #  Save to file
+        #
+        # Check that we have a valid SOA
+        add_soa_rr = False
         if soa_recovered == "":
-          soa_recovered = soa_v
+          soa_recovered =  "ns1."+domain+"."+tld+". admin.mail"+domain+"."+tld+". "+soa_v
+          add_soa_rr = True
         else:
           c_soas = c_soas + 1
         # CNAME at sub top level domain like "domain.com" are not allowed
@@ -121,8 +129,13 @@ def exportDomainsToFile(root_dict, single_file, default_ttl="1d", soa="default")
           if "NS" in rr:
             add_ns = False
             break
-        if add_ns:
+        # Add missing RR
+        if add_ns or add_soa_rr:
             file.write(domain + "." + tld + ".  IN  NS  ns1."+domain+"."+tld+".\n")
+            file.write("ns1."+domain + "." + tld + ".  IN  A  192.0.0.1\n")
+            file.write(domain + "." + tld + ".  IN  MX  mail."+domain+"."+tld+".\n")
+            file.write("mail."+domain + "." + tld + ".  IN  A  192.0.0.2\n")
+            c_rr = c_rr + 4
         # Add all the remaining RR
         for rr in values:
           if cname_tld and ("CNAME" in rr):
@@ -132,6 +145,8 @@ def exportDomainsToFile(root_dict, single_file, default_ttl="1d", soa="default")
           c_rr = c_rr + 1
         if single_file != False:
           file.write("\n")
+      
+      # Get stats
       zone_list.append(domain+"."+tld)
       c_zones = c_zones + 1
   

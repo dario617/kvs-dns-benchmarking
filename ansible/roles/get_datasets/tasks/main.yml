@@ -37,8 +37,8 @@
     - wordlist
     - zone.tpl
 
-- name: Remove CNAME and DNAME records from dataset
-  shell: grep -v -E "CNAME|DNAME" dns-rr.txt > dataset.txt
+- name: Recover only A,HINFO,TXT records from dataset
+  shell: grep -E "A|HINFO|TXT" dns-rr.txt > dataset.txt
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/data"
 
