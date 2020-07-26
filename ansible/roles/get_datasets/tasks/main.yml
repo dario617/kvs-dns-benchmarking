@@ -52,6 +52,11 @@
   args: 
     chdir: "/home/{{ansible_user}}/{{working_dir}}/data/kvsZones"
 
+- name: Remove zonelist from parsed zones
+  cmd: rm parsed_zonelist
+  args: 
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/data/kvsZones"
+  
 - name: Create random zones
   command: "python3 ../tools/gen_zonelist.py {{total_random_zone_count}}"
   args: 

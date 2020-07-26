@@ -1,0 +1,23 @@
+---
+
+# Remove all data so we can create a new batch
+# of random RR, restart parsing on dns-rr.txt
+# and avoid old data getting in the way
+
+- name: Do a data/ clean for dataset reset
+  hosts:
+    - requester
+    - servers
+  tasks:
+    - name: remove all from dir
+      command: rm -rf *
+      args:
+        chdir: "/home/{{ansible_user}}/{{working_dir}}/data/"
+
+- name: Get datasets
+  hosts:
+    - requester
+  roles:
+    - get_datasets
+
+# You should run pre_run.yml in order to proceed
