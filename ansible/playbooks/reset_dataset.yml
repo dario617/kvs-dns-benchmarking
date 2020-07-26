@@ -10,7 +10,7 @@
     - servers
   tasks:
     - name: remove all from dir
-      command: rm -rf *
+      shell: rm -rf *
       args:
         chdir: "/home/{{ansible_user}}/{{working_dir}}/data/"
 

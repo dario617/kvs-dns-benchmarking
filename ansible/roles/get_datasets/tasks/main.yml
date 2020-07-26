@@ -38,7 +38,7 @@
     - zone.tpl
 
 - name: Recover only A,HINFO,TXT records from dataset
-  shell: grep -v -E "CNAME|DNAME" | grep -E "A|HINFO|TXT" dns-rr.txt > dataset.txt
+  shell: grep -P "IN\tA|HINFO|TXT\t" dns-rr.txt > dataset.txt
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/data"
 
@@ -53,7 +53,7 @@
     chdir: "/home/{{ansible_user}}/{{working_dir}}/data/kvsZones"
 
 - name: Remove zonelist from parsed zones
-  cmd: rm parsed_zonelist
+  command: rm parsed_zonelist
   args: 
     chdir: "/home/{{ansible_user}}/{{working_dir}}/data/kvsZones"
   
