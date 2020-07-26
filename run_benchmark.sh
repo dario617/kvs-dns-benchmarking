@@ -63,11 +63,14 @@ if [ $doAll == "y" ]; then
     echo "Running all tests"
     while IFS= read -r line; do
         export $line
+        echo "############# Doing ${SERVER} with ${ZONES} values #############"
         if [ -z $daPasswd ]; then
             ansible-playbook -K playbooks/run_and_measure.yml
         else
             ansible-playbook playbooks/run_and_measure.yml --extra-vars "ansible_become_pass=${daPasswd}"
         fi
+        returned=$?
+        [[ $returned -eq "99" ]] && echo "[CANCELED] Aborting all test" && break
     done < "../tests.conf"
 else
     echo "Continue..."

@@ -1,0 +1,64 @@
+--- 
+
+- name: Remove Server Caches
+  hosts:
+    - servers
+  tasks:
+    - name: Remove server logs
+      shell: "{{item}}"
+      args:
+        chdir: "/home/{{ansible_user}}/{{working_dir}}"
+      loop:
+        - rm bind9/server.log
+        - rm knot2/server.log
+        - rm nsd4/server.log
+        - rm server.log
+
+    - name: Cassandra is Present locally
+      find: 
+        paths: "/home/{{ansible_user}}/{{working_dir}}/"
+        file_type: directory
+        use_regex: yes
+        patterns: '.*apache-cassandra-3.0.*'
+      register: cassandra_folder
+
+    - name: Remove data for cassandra
+      shell: "cd data; rm -rf *"
+      args:
+        chdir: "{{ cassandra_folder.files[0].path }}"
+      when: cassandra_folder.matched != 0
+    
+    - name: Redis is Present locally
+      find: 
+        paths: "/home/{{ansible_user}}/{{working_dir}}/"
+        file_type: directory
+        use_regex: yes
+        patterns: '.*redis-5*'
+      register: redis_folder_extracted
+    
+    - name: Remove data for redis
+      shell: "{{item}}"
+      args:
+        chdir: "{{redis_folder_extracted.files[0].path}}"
+      loop:
+        - rm src/node-1.aof src/node-2.aof
+        - rm src/dump-1.rdb src/dump-2.rdb
+      when: redis_folder_extracted.matched != 0 
+
+    - name: Remove data for redis
+      shell: "rm -rf member"
+      args:
+        chdir: "/var/lib/etcd"
+      become: yes
+    
+    - name: Remove uploaded log
+      shell: "{{item}}"
+      args:
+        chdir: "/home/{{ansible_user}}/{{working_dir}}/KvsDns"
+      loop:
+        - rm populated-redis-real.log populated-redis-random.log
+        - rm populated-cassandra-real.log populated-cassandra-random.log
+        - rm populated-etcd-real.log populated-etcd-random.log
+        - rm nohup.out nohup2.out
+      ignore_errors: yes
+      when: orchestrate is defined
