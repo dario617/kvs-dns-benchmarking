@@ -62,3 +62,9 @@
   loop:
     - { src: 'gather_stats.sh.j2', dest: "gather_stats.sh" }
     - { src: 'compute_rate.sh.j2', dest: "compute_rate.sh" }
+
+- name: Copy Kill script
+  copy:
+    src: files/killserver.sh
+    dest: "/home/{{ansible_user}}/{{working_dir}}/tools/killserver.sh"
+    mode: preserve
