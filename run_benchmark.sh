@@ -77,7 +77,13 @@ else
 fi
 
 # Move results to another folder over here
-mkdir -p ../results
-mv playbooks/results/* ../results
+cd ..
+mkdir -p results
+mv ansible/playbooks/results/* results
+# Unpack stuf
+./tools/unpack_results.sh results/
+# Compute stats
+mkdir -p stats
+python3 ./tools/make_stats.py results stats
 echo "If everything went well results were saved at results"
 echo "Bye bye"

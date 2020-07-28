@@ -15,6 +15,7 @@
     timeout: null
     responses:
       (?i)password: "{{remote_playbook_password}}"
+  ignore_errors: True # When Redis already knows all the nodes
 
 - name: Compile uploader and tools
   command: make build_cmd

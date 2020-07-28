@@ -37,4 +37,4 @@
 
 - name: restart if shutdown failed
   include_tasks: main.yml
-  when: systemstatus.stderr
+  when: systemstatus.failed

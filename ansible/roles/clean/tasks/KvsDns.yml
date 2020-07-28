@@ -14,3 +14,4 @@
     responses:
       (?i)password: "{{remote_playbook_password}}"
   when: (orchestrate is defined) and orchestrate
+  ignore_errors: True # Ignore kill failure when backend died on scheduled shudown

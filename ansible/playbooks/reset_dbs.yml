@@ -13,6 +13,7 @@
         - rm knot2/server.log
         - rm nsd4/server.log
         - rm server.log
+      ignore_errors: True
 
     - name: Cassandra is Present locally
       find: 
@@ -27,6 +28,7 @@
       args:
         chdir: "{{ cassandra_folder.files[0].path }}"
       when: cassandra_folder.matched != 0
+      ignore_errors: True
     
     - name: Redis is Present locally
       find: 
@@ -44,12 +46,14 @@
         - rm src/node-1.aof src/node-2.aof
         - rm src/dump-1.rdb src/dump-2.rdb
       when: redis_folder_extracted.matched != 0 
+      ignore_errors: True
 
-    - name: Remove data for redis
+    - name: Remove data for etcd
       shell: "rm -rf member"
       args:
         chdir: "/var/lib/etcd"
       become: yes
+      ignore_errors: True
     
     - name: Remove uploaded log
       shell: "{{item}}"
