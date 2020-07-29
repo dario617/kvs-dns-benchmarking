@@ -42,6 +42,10 @@
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/data"
 
+- name: Reduce number of RR if necessary
+  shell: "head -n {{subsample_rr}} dataset.txt > tmp.txt; mv tmp.txt dataset.txt"
+  when: subsample_rr is defined
+
 - name: Create a single zone from dataset.txt and parsed_zonelist
   command: python3 ../tools/parse_rr_to_zone.py dataset.txt -o ./main.zone
   args:

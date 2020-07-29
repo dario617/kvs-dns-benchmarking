@@ -81,7 +81,7 @@ cd ..
 mkdir -p results
 mv ansible/playbooks/results/* results
 # Unpack stuf
-./tools/unpack_results.sh results/
+./tools/unpack_results.sh results
 # Compute stats
 mkdir -p stats
 python3 ./tools/make_stats.py results stats

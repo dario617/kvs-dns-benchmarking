@@ -18,8 +18,9 @@ working_dir: dns-bench
 listen_port: 8053
 
 # Test related configs
-total_random_zone_count: 200000
-queries: 100000
+total_random_zone_count: 200000 # Each zone has 10 RR
+# subsample_rr: 200000 # Reduce the number of RR selected from the scrapper
+queries: 100000 # How many different RR to ask for
 
 # Packets per second configs
 pps_floor: 100000
@@ -33,4 +34,6 @@ shutdown_ceil: 20000 # A lower boundary for system failure tests
 # the Ethernet layer will use this mac to route
 proxy_mac: "00:00:00:00:00:00"
 
+# Change this password to your remote systems sudo password 
+# (to play the goKvsDns ansible playbook)
 remote_playbook_password: dummyPasswordChangeBeforeRunning

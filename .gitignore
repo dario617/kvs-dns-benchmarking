@@ -10,3 +10,6 @@ ansible/roles/get_datasets/files/zonelist
 # Other
 results
 stats
+
+# Python
+*.pyc
