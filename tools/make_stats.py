@@ -4,6 +4,7 @@ import argparse
 import os
 import json
 from collections import OrderedDict
+import helpers
 
 #
 # Utilities
@@ -395,8 +396,25 @@ def get_backend_resistance(dirs, outDir):
 # Plot helpers
 #
 
-def plot_mem_usage(files):
-  pass
+def plot_mem_usage(files, outDir):
+    random = files[0]
+    real = files[1]
+    ax = helpers.make_mem_usage(random,"Memory usage per server for random rr")
+    fig = ax.get_figure()
+    fig.savefig(outDir+"/mem_usage_real.png")
+    ax = helpers.make_mem_usage(real,"Memory usage per server for scrapped rr")
+    fig = ax.get_figure()
+    fig.savefig(outDir+"/mem_usage_random.png")
+
+def plot_times(files, outDir):
+    random = files[0]
+    real = files[1]
+    ax = helpers.load_and_plot(random, "Average response times for random rr")
+    fig = ax.get_figure()
+    fig.savefig(outDir+"/response_times_random.png")
+    ax = helpers.aux(real, "Average response times for scrapped rr")
+    fig = ax.get_figure()
+    fig.savefig(outDir+"/response_times_real.png")
 
 def main(resultsDir, outDir):
     # Look for folders
@@ -429,6 +447,8 @@ def main(resultsDir, outDir):
         os.makedirs(outDir + "/response-stats")
     if not os.path.exists(outDir + "/segfault-stats"):
         os.makedirs(outDir + "/segfault-stats")
+    if not os.path.exists(outDir + "/graphs"):
+        os.makedirs(outDir + "/graphs")
 
     # Compute for each group
     mem_usage = get_mem_usage(mem_dir, outDir + "/mem-usage")
@@ -437,6 +457,9 @@ def main(resultsDir, outDir):
         response_dir, outDir + "/response-stats")
     random_segfault, real_segfault = get_backend_resistance(
         segfault_dir, outDir + "/segfault-stats")
+
+    plot_mem_usage(mem_usage,outDir + "/graphs")
+    plot_times(server_times,outDir + "/graphs")
 
 
 if __name__ == "__main__":

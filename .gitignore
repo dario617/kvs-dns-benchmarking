@@ -13,3 +13,4 @@ stats
 
 # Python
 *.pyc
+*.ipynb_checkpoints
