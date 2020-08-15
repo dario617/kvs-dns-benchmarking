@@ -21,6 +21,11 @@ function cpu_snap {
 	mpstat | tail -1 | awk '{print $4, $5, $6, $7, $8}' > $1
 }
 
+function proc_snap {
+	# avg 1 min / 5 min / 15 min
+	cat /proc/loadavg > $1
+}
+
 iface={{ansible_default_ipv4['interface']}}
 
 s0=$(stats)
@@ -39,4 +44,11 @@ if [ -z "$3" ]; then
 echo "Ignore cpu snapshot"
 else
 cpu_snap $3
+fi
+
+# Save cpu snapshot
+if [ -z "$4" ]; then
+echo "Ignore load avg snapshot"
+else
+proc_snap $4
 fi

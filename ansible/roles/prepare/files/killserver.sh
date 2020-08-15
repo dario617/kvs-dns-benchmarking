@@ -25,7 +25,7 @@ function kill_redis {
   [[ $2 == 1 ]] && redis_port=7003
   [[ $2 == 2 ]] && redis_port=7005
   cd /redis-5.0.8/conf/
-  ./redis-cli -p ${redis_port} debug segfault
+  ./redis-cli -p ${redis_port} shutdown
 }
 
 function kill_cassandra {

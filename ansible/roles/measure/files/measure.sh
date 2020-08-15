@@ -43,7 +43,7 @@ function do_replay() {
 
 	# Stats after and compute
 	for host in $targets; do
-		ssh $user@$host "cd ${wd}; ./tools/gather_stats.sh after${host}.log mem-${host}-${pps}.log cpu-${host}-${pps}.log"
+		ssh $user@$host "cd ${wd}; ./tools/gather_stats.sh after${host}.log mem-${host}-${pps}.log cpu-${host}-${pps}.log load-${host}-${pps}.log"
 		ssh $user@$host "cd ${wd}; ./tools/compute_rate.sh ${pps}"
 	done
 
