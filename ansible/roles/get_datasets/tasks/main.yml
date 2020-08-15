@@ -38,12 +38,14 @@
     - zone.tpl
 
 - name: Recover only A,HINFO,TXT records from dataset
-  shell: grep -P "IN\tA|HINFO|TXT\t" dns-rr.txt > dataset.txt
+  script: scripts/data_before.sh
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/data"
 
 - name: Reduce number of RR if necessary
-  shell: "head -n {{subsample_rr}} dataset.txt > tmp.txt; mv tmp.txt dataset.txt"
+  script: "sripts/data_before.sh reduce {{subsample_rr}}"
+  args:
+    chdir: "/home/{{ansible_user}}/{{working_dir}}/data"
   when: subsample_rr is defined
 
 - name: Create a single zone from dataset.txt and parsed_zonelist

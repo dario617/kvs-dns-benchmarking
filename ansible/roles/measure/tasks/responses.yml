@@ -4,7 +4,7 @@
 # pcap_file
 # test_name
 
-- name: Do tcpreplay from requester with random RR
+- name: Do tcpreplay from requester with different RR
   script: 'files/measure.sh {{item}} {{pcap_file}} ./results/wireshark-{{test_name}}.log'
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}"

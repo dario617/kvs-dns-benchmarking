@@ -8,8 +8,8 @@ ansible/roles/get_datasets/files/parsed_zonelist
 ansible/roles/get_datasets/files/zonelist
 
 # Other
-results
-stats
+results*
+stats*
 
 # Python
 *.pyc

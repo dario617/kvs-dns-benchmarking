@@ -1,6 +1,6 @@
 
 - name: Get memory snapshot
-  shell: "free -m|awk '{print $3}'|tail -n 2 >> mem-usage-{{server}}-{{test_name}}-{{ansible_default_ipv4.address}}.log"
+  shell: "free -m|awk '{print $3}'|tail -n 2 > mem-usage-{{server}}-{{test_name}}-{{ansible_default_ipv4.address}}.log"
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}" 
   when: op=="before"

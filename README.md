@@ -18,8 +18,8 @@ Compare the average throughput of different dns servers.
 It compares
 - queries per second
 - answered responeses
-- memory usage (Work In Progress)
-- failure resiliance (Work In Progress)
+- memory usage
+- failure resiliance
 
 ## Prerequisites
 
