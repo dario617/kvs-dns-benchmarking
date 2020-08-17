@@ -43,7 +43,7 @@
     chdir: "/home/{{ansible_user}}/{{working_dir}}/data"
 
 - name: Reduce number of RR if necessary
-  script: "sripts/data_before.sh reduce {{subsample_rr}}"
+  script: "scripts/data_before.sh reduce {{subsample_rr}}"
   args:
     chdir: "/home/{{ansible_user}}/{{working_dir}}/data"
   when: subsample_rr is defined

@@ -64,7 +64,6 @@ def recover_cpu_profile(machine_folders):
             machine_cpu[name] = resort_pps_dict(machine_cpu[name])
     return machine_cpu
 
-
 def recover_mem_profile(machine_folders):
     # It uses full paths
     # Per machine do profile capture
@@ -85,7 +84,31 @@ def recover_mem_profile(machine_folders):
 
     return machine_mems
 
-
+def recover_loads_profile(machine_folders):
+    # It uses full paths
+    # Per machien do profile capture
+    machine_loads = dict()
+    for machine_f in machine_folders:
+        name = name_machine(machine_f)
+        machine_loads[name] = dict()
+        measurements = os.listdir(machine_f)
+        for data in measurements:
+            with open(machine_f+"/"+data) as f:
+                lines = f.readlines()
+                # names like cpu-hostsip-pps.log
+                pps = data[find_ocurrence(data, "-", 2)+1:data.find(".log")]
+                # Data like 0.00 0.01 0.03 1/123 1566
+                # Recover three loads
+                data = lines[0].strip().split(" ")
+                machine_loads[name][pps] = dict()
+                machine_loads[name][pps]["1m"] = data[0]
+                machine_loads[name][pps]["5m"] = data[1]
+                machine_loads[name][pps]["15m"] = data[2]
+                
+            # Sort and replace
+            machine_loads[name] = resort_pps_dict(machine_loads[name])
+    return machine_loads
+        
 def recover_servers_net(machine_folders):
     machine_net = dict()
     for machine_f in machine_folders:
@@ -278,6 +301,7 @@ def get_response_stats(dirs, outDir, name="response"):
             stats[server_name] = dict()
             sub_f = os.listdir(server_f)
             cpus_f = []
+            load_f = []
             responses_f = []
             mem_f = []
             observer = ""
@@ -289,6 +313,8 @@ def get_response_stats(dirs, outDir, name="response"):
                     cpus_f.append(path)
                 elif "mem" in f:
                     mem_f.append(path)
+                elif "load" in f:
+                    load_f.append(path)
                 elif "wireshark" in f:
                     observer = path
                 else:
@@ -298,11 +324,13 @@ def get_response_stats(dirs, outDir, name="response"):
             cpu_evolution = recover_cpu_profile(cpus_f)
             net_evolution = recover_servers_net(responses_f)
             observations = recover_observer_net(observer)
+            load_evolution = recover_loads_profile(load_f)
 
             # Save
             stats[server_name]["mem"] = memory_evolution
             stats[server_name]["cpu"] = cpu_evolution
             stats[server_name]["net"] = net_evolution
+            stats[server_name]["load"] = load_evolution
             stats[server_name]["wireshark"] = observations
 
         return stats
@@ -337,6 +365,16 @@ def get_response_stats(dirs, outDir, name="response"):
                         values = rates[pps].replace(" ", ",")
                         f.write("{},{},{},{}\n".format(
                             server, machine, pps, values))
+            # Save load evolution
+            load = stats[server]["load"]
+            with open(parent_dir+"/load-evolution-"+file_name_suffix+".csv", op_mode) as f:
+                if run_one:
+                    f.write("server,machine,pps,1m,5m,15m\n")
+                for machine in load.keys():
+                    rates = load[machine]
+                    for pps in rates:
+                        f.write("{},{},{},{},{},{}\n".format(
+                            server, machine, pps, rates[pps]["1m"],rates[pps]["5m"],rates[pps]["15m"]))
             # Save network stats
             dev_net = stats[server]["net"]
             with open(parent_dir+"/responses-evolution-"+file_name_suffix+".csv", op_mode) as f:
@@ -378,10 +416,161 @@ def get_response_stats(dirs, outDir, name="response"):
             run_one = False
         return [parent_dir+"/mem-evolution-"+file_name_suffix+".csv", parent_dir+"/cpu-evolution-"+file_name_suffix+".csv", parent_dir+"/responses-evolution-"+file_name_suffix+".csv", parent_dir+"/throughput-evolution-"+file_name_suffix+".csv"]
 
-    random_csv = unpack_and_save(make_stats_per_server(
-        rand, name), outDir, "random-"+name)
-    real_csv = unpack_and_save(make_stats_per_server(
-        real, name), outDir, "real-"+name)
+    def unpack_and_save_easy_plots(stats, parent_dir, file_name_suffix):
+        # Run once to compute the dynamic headers
+        run_one = True
+        # Check each server
+        headers = dict()
+        for server in stats.keys():
+            if run_one:
+                op_mode = "w"
+            else:
+                op_mode = "a"
+            # Save mem evolution stats
+            mem = stats[server]["mem"]
+            with open(parent_dir+"/mem-evolution-sorted-"+file_name_suffix+".csv", op_mode) as f:
+                if run_one:
+                    dinamic_header = []
+                    for machine in mem.keys():
+                        dinamic_header.append(machine+" - RAM")
+                        dinamic_header.append(machine+" - Swap")
+                    headers["mem"] = "pps,{}\n".format(",".join(dinamic_header))
+                f.write(server+"\n")
+                f.write(headers["mem"])
+                machines = list(mem.keys())
+                rates = mem[machines[0]]
+                for pps in rates:
+                    line = pps
+                    for machine in machines:
+                        line = line + "," + mem[machine][pps].replace(" ",",") 
+                    f.write("{}\n".format(line))
+            # Save cpu evolution
+            cpu = stats[server]["cpu"]
+            with open(parent_dir+"/cpu-evolution-sorted-"+file_name_suffix+".csv", op_mode) as f:
+                if run_one:
+                    dinamic_header = []
+                    for machine in cpu.keys():
+                        dinamic_header.append(machine+" - usr")
+                        dinamic_header.append(machine+" - sys")
+                        dinamic_header.append(machine+" - iowait")
+                    headers["cpu"] = "pps,{}\n".format(",".join(dinamic_header))
+                    #f.write("server,machine,pps,usr,nice,sys,iowait,irq\n")
+                f.write(server+"\n")
+                f.write(headers["cpu"])
+                machines = list(cpu.keys())
+                rates = cpu[machines[0]]
+                for pps in rates:
+                    line = pps
+                    for machine in machines:
+                        values = cpu[machine][pps].split(" ")
+                        line = line + "," + values[0] + "," + values[2] + "," + values[3]
+                    f.write("{}\n".format(line))
+            # Save load evolution
+            load = stats[server]["load"]
+            with open(parent_dir+"/load-evolution-sorted-"+file_name_suffix+".csv", op_mode) as f:
+                if run_one:
+                    dinamic_header = []
+                    avgs = [" - 1m"," - 5m"," - 15m"]
+                    for avg in avgs:
+                        for machine in load.keys():
+                            dinamic_header.append(machine+avg)
+                    headers["load"] = "pps,{}\n".format(",".join(dinamic_header))
+                    #f.write("server,machine,pps,1m,5m,15m\n")
+                f.write(server+"\n")
+                f.write(headers["cpu"])
+                machines = list(load.keys())
+                rates = load[machines[0]]
+                for pps in rates:
+                    line = pps
+                    avgs = ["1m","5m","15m"]
+                    for avg in avgs:
+                        for machine in machines:
+                            line = line + "," + load[machine][pps][avg]
+                    f.write("{}\n".format(line))
+            # Save network stats as percentage
+            dev_net = stats[server]["net"]
+            with open(parent_dir+"/responses-evolution-sorted-percentage-"+file_name_suffix+".csv", op_mode) as f:
+                if run_one:
+                    dinamic_header = []
+                    for machine in dev_net.keys():
+                        dinamic_header.append(machine)
+                    headers["dev_net"] = "pps,{}\n".format(",".join(dinamic_header))
+                    #f.write("server,machine,pps,answered,query rate,query avg len,reply rate,reply avg len\n")
+                f.write(server+"\n")
+                f.write(headers["dev_net"])
+                machines = list(dev_net.keys())
+                rates = dev_net[machines[0]]
+                for pps in rates:
+                    line = pps
+                    for machine in dev_net.keys():
+                        # Recovered only answered percentage
+                        line = line + "," + dev_net[machine][pps].split(" ")[0]
+                    f.write("{}\n".format(line))
+            # Save network stats as packet rate
+            dev_net = stats[server]["net"]
+            with open(parent_dir+"/responses-evolution-sorted-packets-"+file_name_suffix+".csv", op_mode) as f:
+                if run_one:
+                    dinamic_header = []
+                    for machine in dev_net.keys():
+                        dinamic_header.append(machine)
+                    headers["dev_net"] = "pps,{}\n".format(",".join(dinamic_header))
+                    #f.write("server,machine,pps,answered,query rate,query avg len,reply rate,reply avg len\n")
+                f.write(server+"\n")
+                f.write(headers["dev_net"])
+                machines = list(dev_net.keys())
+                rates = dev_net[machines[0]]
+                for pps in rates:
+                    line = pps
+                    for machine in dev_net.keys():
+                        # Recovered only packet reply rate
+                        line = line + "," + dev_net[machine][pps].split(" ")[3]
+                    f.write("{}\n".format(line))
+            run_one = False
+        
+        # Do Wireshark sum
+        # Save wireshark stats
+        with open(parent_dir+"/throughput-evolution-comparison"+file_name_suffix+".csv", "w") as f:
+
+            # Re map vaues
+            total_dict = dict()
+            servers = list(stats.keys())
+            rates = stats[servers[0]]["wireshark"].keys()
+            operations = ["sent", "recv"]
+            for server in servers:
+                total_dict[server] = dict()
+                for op in operations:
+                    total_dict[server][op] = dict()
+                    for pps in rates:
+                        entries = len(stats[server]["wireshark"][pps][op]["interval"])
+                        # Make a resume of instances
+                        packets = 0
+                        for i in range(entries):
+                            packets = packets + stats[server]["wireshark"][pps][op]["total"][i]
+                        total_dict[server][op][pps] = packets
+            
+            # Save horizontally
+            header = "pps,"+",".join(servers)
+            f.write(header+"\n")
+            for pps in rates:
+                line = pps
+                for server in servers:
+                    sent = total_dict[server]["sent"][pps]
+                    recv = total_dict[server]["recv"][pps]
+                    percentage = recv*100.0/sent
+                    line = line + "," + str(percentage)
+                f.write(line + "\n")
+
+    # Compute once
+    rand_computed = make_stats_per_server(rand, name)
+    real_computed = make_stats_per_server(real, name)
+
+    # All info sorted
+    random_csv = unpack_and_save(rand_computed, outDir, "random-"+name)
+    real_csv = unpack_and_save(real_computed, outDir, "real-"+name)
+
+    ## Aditional files :D for easy custom plotting
+    unpack_and_save_easy_plots(rand_computed, outDir, "random-"+name)
+    unpack_and_save_easy_plots(real_computed, outDir, "real-"+name)
 
     return random_csv, real_csv
 
